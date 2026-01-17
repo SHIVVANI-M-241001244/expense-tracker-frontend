@@ -1,20 +1,99 @@
-const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+/*******************************
+  DARK MODE (SAFE)
+********************************/
+function setGreeting() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return;
 
-// AUTH
+  const hour = new Date().getHours();
+  let greeting = "";
+  let sub = "";
+  let emoji = "";
+
+  if (hour >= 5 && hour < 12) {
+    greeting = "Good Morning";
+    emoji = "☀️";
+    sub = "Let’s make today financially calm & confident ✨";
+  } else if (hour >= 12 && hour < 17) {
+    greeting = "Good Afternoon";
+    emoji = "🌤️";
+    sub = "Small steps today build strong habits 💛";
+  } else if (hour >= 17 && hour < 21) {
+    greeting = "Good Evening";
+    emoji = "🌆";
+    sub = "You’re doing great — every rupee counts 💜";
+  } else {
+    greeting = "Good Night";
+    emoji = "🌙";
+    sub = "Track gently, rest peacefully 🤍";
+  }
+
+  document.getElementById(
+    "greetingText"
+  ).innerText = `${greeting}, ${user.name} ${emoji}`;
+
+  document.getElementById("greetingSub").innerText = sub;
+}
+
+setGreeting();
+
+if (localStorage.getItem("dark") === "true") {
+  document.body.classList.add("dark");
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "dark",
+    document.body.classList.contains("dark")
+  );
+}
+
+/*******************************
+  AUTH CHECK
+********************************/
 const user = JSON.parse(localStorage.getItem("user"));
+
 if (!user || !user.id) {
   alert("Please login again");
   window.location.href = "login.html";
 }
 
-document.getElementById("username").innerText = user.name;
+/*******************************
+  GREETING
+********************************/
+const usernameEl = document.getElementById("username");
+if (usernameEl) {
+  const hour = new Date().getHours();
+  let greet = "Hello";
 
-// ADD TRANSACTION
+  if (hour >= 5 && hour < 12) greet = "Good Morning";
+  else if (hour >= 12 && hour < 17) greet = "Good Afternoon";
+  else if (hour >= 17 && hour < 21) greet = "Good Evening";
+  else greet = "Good Night";
+
+  usernameEl.innerText = `${greet}, ${user.name}`;
+}
+
+/*******************************
+  API
+********************************/
+const API =
+  "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+
+/*******************************
+  ADD TRANSACTION
+********************************/
 async function addTransaction() {
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const amount = document.getElementById("amount").value;
-  const note = document.getElementById("note").value;
+  const typeEl = document.getElementById("type");
+  const categoryEl = document.getElementById("category");
+  const amountEl = document.getElementById("amount");
+  const noteEl = document.getElementById("note");
+
+  const type = typeEl.value;
+  const category = categoryEl.value;
+  const amount = amountEl.value;
+  const note = noteEl.value;
 
   if (!amount) {
     alert("Amount is required");
@@ -22,7 +101,7 @@ async function addTransaction() {
   }
 
   if (type === "expense" && !category) {
-    alert("Select a category");
+    alert("Please select a category");
     return;
   }
 
@@ -31,78 +110,90 @@ async function addTransaction() {
     type,
     category: type === "income" ? "Income" : category,
     amount: Number(amount),
-    note,
+    note
   };
 
-  console.log("SENDING:", payload);
+  try {
+    const res = await fetch(`${API}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  const res = await fetch(`${API}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+    if (!res.ok) throw new Error("Save failed");
 
-  const data = await res.json();
-  console.log("RESPONSE:", data);
+    // Clear inputs
+    amountEl.value = "";
+    noteEl.value = "";
+    categoryEl.value = "";
 
-  if (!res.ok) {
-    alert("Failed to save");
-    return;
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Transaction not saved ❌");
   }
-
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  document.getElementById("category").value = "";
-
-  loadTransactions();
 }
 
-// LOAD
+/*******************************
+  LOAD TRANSACTIONS
+********************************/
 async function loadTransactions() {
-  const res = await fetch(`${API}/${user.id}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API}/${user.id}`);
+    const data = await res.json();
 
-  let income = 0;
-  let expense = 0;
-  const list = document.getElementById("transactionList");
-  list.innerHTML = "";
+    let income = 0;
+    let expense = 0;
 
-  data.forEach(t => {
-    if (t.type === "income") income += t.amount;
-    else expense += t.amount;
+    const list = document.getElementById("transactionList");
+    list.innerHTML = "";
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      ${t.category} - ₹${t.amount}
-      <button onclick="deleteTx('${t._id}')">🗑️</button>
-    `;
-    list.appendChild(li);
-  });
+    data.forEach((t) => {
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
 
-  document.getElementById("totalIncome").innerText = `₹${income}`;
-  document.getElementById("totalExpense").innerText = `₹${expense}`;
-  document.getElementById("balance").innerText = `₹${income - expense}`;
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${t.category}</span>
+        <span>₹${t.amount}</span>
+        <button onclick="deleteTx('${t._id}')">🗑️</button>
+      `;
+      list.appendChild(li);
+    });
 
-  if (typeof renderCharts === "function") {
-    renderCharts(data);
+    document.getElementById("totalIncome").innerText = `₹${income}`;
+    document.getElementById("totalExpense").innerText = `₹${expense}`;
+    document.getElementById("balance").innerText = `₹${income - expense}`;
+
+    // Charts
+    if (typeof renderCharts === "function") {
+      renderCharts(data);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load transactions");
   }
 }
 
-// DELETE
+/*******************************
+  DELETE TRANSACTION
+********************************/
 async function deleteTx(id) {
+  if (!confirm("Delete this transaction?")) return;
+
   await fetch(`${API}/${id}`, { method: "DELETE" });
   loadTransactions();
 }
 
-// DARK MODE
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-}
-
-// LOGOUT
+/*******************************
+  LOGOUT
+********************************/
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
+/*******************************
+  INIT
+********************************/
 loadTransactions();

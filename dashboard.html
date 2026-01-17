@@ -10,67 +10,80 @@
 
 <body class="dashboard">
 
+<!-- ================= HEADER ================= -->
 <header class="topbar">
-  <h2>Hi, <span id="username">User</span> 💜</h2>
-  <div>
-    <button onclick="toggleDarkMode()">🌙</button>
-    <button onclick="logout()">Logout</button>
+  <div class="greeting">
+    <h2 id="greetingText">Hello 💜</h2>
+    <p id="greetingSub">Welcome back</p>
+  </div>
+
+  <div class="top-actions">
+    <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </header>
 
+<!-- ================= MAIN ================= -->
 <main class="container">
 
-<section class="summary">
-  <div>Total Income <span id="totalIncome">₹0</span></div>
-  <div>Total Expense <span id="totalExpense">₹0</span></div>
-  <div>Balance <span id="balance">₹0</span></div>
-</section>
+  <!-- SUMMARY -->
+  <section class="summary">
+    <div>Total Income <span id="totalIncome">₹0</span></div>
+    <div>Total Expense <span id="totalExpense">₹0</span></div>
+    <div>Balance <span id="balance">₹0</span></div>
+  </section>
 
-<section class="card">
-  <h3>Add Transaction</h3>
+  <!-- ADD TRANSACTION -->
+  <section class="card">
+    <h3>Add Transaction</h3>
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-  <select id="category">
-    <option value="">Select Category</option>
-    <option value="Rent">🏠 Rent</option>
-    <option value="Hospital">🏥 Hospital</option>
-    <option value="Groceries">🛒 Groceries</option>
-    <option value="Entertainment">🎬 Entertainment</option>
-    <option value="Transport">🚕 Transport</option>
-    <option value="Other">📌 Other</option>
-  </select>
+    <select id="category">
+      <option value="">Select Category</option>
+      <option value="Rent">🏠 Rent</option>
+      <option value="Hospital">🏥 Hospital</option>
+      <option value="Groceries">🛒 Groceries</option>
+      <option value="Entertainment">🎬 Entertainment</option>
+      <option value="Transport">🚕 Transport</option>
+      <option value="Other">📌 Other</option>
+    </select>
 
-  <input type="number" id="amount" placeholder="Amount" />
-  <input type="text" id="note" placeholder="Note (optional)" />
+    <input type="number" id="amount" placeholder="Amount" />
+    <input type="text" id="note" placeholder="Note (optional)" />
 
-  <button onclick="addTransaction()">Add</button>
-</section>
+    <button onclick="addTransaction()">Add</button>
+  </section>
 
-<section class="card">
-  <h3>Transactions</h3>
-  <ul id="transactionList"></ul>
-</section>
+  <!-- TRANSACTIONS -->
+  <section class="card">
+    <h3>Transactions</h3>
+    <ul id="transactionList"></ul>
+  </section>
 
-<section class="card">
-  <h3>Expense Distribution</h3>
-  <canvas id="pieChart"></canvas>
-</section>
+  <!-- PIE CHART -->
+  <section class="card">
+    <h3>Expense Distribution</h3>
+    <canvas id="pieChart"></canvas>
+  </section>
 
-<section class="card">
-  <h3>Income vs Expense</h3>
-  <canvas id="barChart"></canvas>
-</section>
+  <!-- BAR CHART -->
+  <section class="card">
+    <h3>Income vs Expense</h3>
+    <canvas id="barChart"></canvas>
+  </section>
 
 </main>
 
+<!-- ================= SCRIPTS ================= -->
 <script src="/js/dashboard_v2.js"></script>
 <script src="/js/chart.js"></script>
 
 <script>
+  // Show category only for expense
   const typeEl = document.getElementById("type");
   const categoryEl = document.getElementById("category");
 
