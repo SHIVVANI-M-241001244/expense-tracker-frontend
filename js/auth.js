@@ -30,7 +30,9 @@ async function register(event) {
     }
 
     alert("Registration successful ✅");
-    window.location.href = "login.html";
+
+    // 🔧 FIXED (absolute path)
+    window.location.href = "/login.html";
   } catch (err) {
     alert("Server error");
   }
@@ -64,7 +66,7 @@ async function login(event) {
       return;
     }
 
-    /* 🔥 IMPORTANT PART */
+    // 🔥 SAVE USER (CORRECT)
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -74,18 +76,21 @@ async function login(event) {
       })
     );
 
-    window.location.href = "dashboard.html";
+    // 🔧 FIXED (absolute path)
+    window.location.href = "/dashboard.html";
   } catch (err) {
     alert("Server error");
   }
 }
 
 /* =========================
-   AUTO REDIRECT (OPTIONAL)
+   AUTO REDIRECT
 ========================= */
 (function () {
   const user = JSON.parse(localStorage.getItem("user"));
+
   if (user && window.location.pathname.includes("login")) {
-    window.location.href = "dashboard.html";
+    // 🔧 FIXED
+    window.location.href = "/dashboard.html";
   }
 })();
