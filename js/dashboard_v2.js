@@ -1,41 +1,54 @@
-/* ================= AUTH ================= */
+/********************************
+  AUTH + USER ID (FIXED)
+*********************************/
 const user = JSON.parse(localStorage.getItem("user"));
-if (!user || !user._id) {
+
+if (!user || !(user._id || user.id)) {
   alert("Please login again");
   window.location.href = "login.html";
 }
 
-const USER_ID = user._id;
-const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+const USER_ID = user._id || user.id;
+const API =
+  "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
-/* ================= GREETING ================= */
+/********************************
+  GREETING (TIME BASED)
+*********************************/
 function setGreeting() {
   const hour = new Date().getHours();
   let greet = "Hello";
   let sub = "";
+  let emoji = "";
 
   if (hour >= 5 && hour < 12) {
     greet = "Good Morning";
+    emoji = "☀️";
     sub = "Let’s make today financially calm ✨";
   } else if (hour >= 12 && hour < 17) {
     greet = "Good Afternoon";
+    emoji = "🌤️";
     sub = "Small steps build strong habits 💛";
   } else if (hour >= 17 && hour < 21) {
     greet = "Good Evening";
+    emoji = "🌆";
     sub = "Every rupee counts 💜";
   } else {
     greet = "Good Night";
+    emoji = "🌙";
     sub = "Track gently, rest peacefully 🤍";
   }
 
   document.getElementById("greetingText").innerText =
-    `${greet}, ${user.name}`;
+    `${greet}, ${user.name} ${emoji}`;
   document.getElementById("greetingSub").innerText = sub;
 }
 
 setGreeting();
 
-/* ================= ADD ================= */
+/********************************
+  ADD TRANSACTION
+*********************************/
 async function addTransaction() {
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
@@ -43,12 +56,12 @@ async function addTransaction() {
   const note = document.getElementById("note").value;
 
   if (!amount) {
-    alert("Amount required");
+    alert("Amount is required");
     return;
   }
 
   if (type === "expense" && !category) {
-    alert("Select category");
+    alert("Please select a category");
     return;
   }
 
@@ -60,8 +73,8 @@ async function addTransaction() {
       type,
       category: type === "income" ? "Income" : category,
       amount: Number(amount),
-      note
-    })
+      note,
+    }),
   });
 
   document.getElementById("amount").value = "";
@@ -71,7 +84,9 @@ async function addTransaction() {
   loadTransactions();
 }
 
-/* ================= LOAD ================= */
+/********************************
+  LOAD TRANSACTIONS
+*********************************/
 async function loadTransactions() {
   const res = await fetch(`${API}/${USER_ID}`);
   const data = await res.json();
@@ -82,7 +97,7 @@ async function loadTransactions() {
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  data.forEach(t => {
+  data.forEach((t) => {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
 
@@ -102,7 +117,9 @@ async function loadTransactions() {
   document.getElementById("balance").innerText = `₹${income - expense}`;
 }
 
-/* ================= EDIT ================= */
+/********************************
+  EDIT TRANSACTION
+*********************************/
 async function editTx(id, category, amount) {
   const newAmount = prompt("Edit amount", amount);
   if (!newAmount) return;
@@ -112,14 +129,16 @@ async function editTx(id, category, amount) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       category,
-      amount: Number(newAmount)
-    })
+      amount: Number(newAmount),
+    }),
   });
 
   loadTransactions();
 }
 
-/* ================= DELETE ================= */
+/********************************
+  DELETE TRANSACTION
+*********************************/
 async function deleteTx(id) {
   if (!confirm("Delete this transaction?")) return;
 
@@ -127,16 +146,22 @@ async function deleteTx(id) {
   loadTransactions();
 }
 
-/* ================= DARK MODE ================= */
+/********************************
+  DARK MODE
+*********************************/
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
 }
 
-/* ================= LOGOUT ================= */
+/********************************
+  LOGOUT
+*********************************/
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
-/* ================= INIT ================= */
+/********************************
+  INIT
+*********************************/
 loadTransactions();
