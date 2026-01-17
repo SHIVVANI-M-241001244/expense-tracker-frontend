@@ -2,7 +2,6 @@
 if (!document.getElementById("transactionList")) {
   return;
 }
-
 const API_URL =
   "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 

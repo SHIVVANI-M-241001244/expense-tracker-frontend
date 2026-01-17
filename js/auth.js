@@ -1,5 +1,5 @@
-const API_URL =
-  "https://shivvani-m-expense-backend.onrender.com/api/auth";
+const API_URL = "https://shivvani-m-expense-backend.onrender.com/api/auth";
+
 
 /* =======================
    REGISTER
