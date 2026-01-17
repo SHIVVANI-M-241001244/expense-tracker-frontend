@@ -42,13 +42,7 @@
       <!-- LEFT -->
       <div class="left-col">
 
-        <div class="card">
-          <h3>Monthly Budget</h3>
-          <input type="number" id="budgetInput" placeholder="Enter budget" />
-          <button class="btn" onclick="saveBudget()">Save Budget</button>
-          <p id="budgetStatus"></p>
-        </div>
-
+        <!-- ADD TRANSACTION -->
         <div class="card">
           <h3>Add Income / Expense</h3>
 
@@ -60,10 +54,9 @@
           <select id="category">
             <option value="">Select Category</option>
             <option value="Rent">🏠 Rent</option>
-            <option value="Essentials">🧺 Essentials</option>
+            <option value="Hospital">🏥 Hospital</option>
             <option value="Groceries">🛒 Groceries</option>
             <option value="Entertainment">🎬 Entertainment</option>
-            <option value="Hospital">🏥 Hospital</option>
             <option value="Transport">🚕 Transport</option>
             <option value="Education">📚 Education</option>
             <option value="Shopping">🛍️ Shopping</option>
@@ -73,13 +66,15 @@
           <input type="number" id="amount" placeholder="Amount" />
           <input type="text" id="note" placeholder="Note (optional)" />
 
-          <button class="btn" id="addBtn" onclick="addTransaction()">Add</button>
+          <button class="btn" onclick="addTransaction()">Add</button>
         </div>
 
+        <!-- TRANSACTIONS -->
         <div class="card">
           <h3>Recent Transactions</h3>
           <ul id="transactionList"></ul>
         </div>
+
       </div>
 
       <!-- RIGHT -->
@@ -88,13 +83,10 @@
           <h3>Expense Distribution</h3>
           <canvas id="pieChart"></canvas>
         </div>
+
         <div class="card">
           <h3>Income vs Expense</h3>
           <canvas id="barChart"></canvas>
-        </div>
-        <div class="card">
-          <h3>Balance Trend</h3>
-          <canvas id="lineChart"></canvas>
         </div>
       </div>
 

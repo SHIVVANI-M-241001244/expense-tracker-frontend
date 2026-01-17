@@ -1,4 +1,4 @@
-let pieChart, barChart, lineChart;
+let pieChart, barChart;
 
 async function loadCharts() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -9,30 +9,25 @@ async function loadCharts() {
   );
   const data = await res.json();
 
-  const expenseMap = {};
-  let income = 0,
-    expense = 0,
-    balance = 0;
-  const balanceData = [];
+  let income = 0;
+  let expense = 0;
+  const categoryMap = {};
 
   data.forEach((t) => {
-    if (t.type === "expense") {
+    if (t.type === "income") income += t.amount;
+    else {
       expense += t.amount;
-      expenseMap[t.category] =
-        (expenseMap[t.category] || 0) + t.amount;
-    } else {
-      income += t.amount;
+      categoryMap[t.category] =
+        (categoryMap[t.category] || 0) + t.amount;
     }
-    balance += t.type === "income" ? t.amount : -t.amount;
-    balanceData.push(balance);
   });
 
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(pieChartEl, {
     type: "pie",
     data: {
-      labels: Object.keys(expenseMap),
-      datasets: [{ data: Object.values(expenseMap) }],
+      labels: Object.keys(categoryMap),
+      datasets: [{ data: Object.values(categoryMap) }],
     },
   });
 
@@ -42,15 +37,6 @@ async function loadCharts() {
     data: {
       labels: ["Income", "Expense"],
       datasets: [{ data: [income, expense] }],
-    },
-  });
-
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(lineChartEl, {
-    type: "line",
-    data: {
-      labels: balanceData.map((_, i) => i + 1),
-      datasets: [{ data: balanceData }],
     },
   });
 }

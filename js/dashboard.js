@@ -18,39 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
   /* DARK MODE */
   window.toggleDarkMode = () => {
     document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "darkMode",
-      document.body.classList.contains("dark")
-    );
   };
-
-  if (localStorage.getItem("darkMode") === "true") {
-    document.body.classList.add("dark");
-  }
-
-  /* BUDGET */
-  window.saveBudget = () => {
-    const b = document.getElementById("budgetInput").value;
-    if (!b) return alert("Enter budget");
-    localStorage.setItem("budget", b);
-  };
-
-  function checkBudget(exp) {
-    const b = localStorage.getItem("budget");
-    if (!b) return;
-    document.getElementById("budgetStatus").innerText =
-      exp > b ? "⚠️ Budget exceeded" : "✅ Within budget";
-  }
 
   /* ADD TRANSACTION */
   window.addTransaction = async () => {
     const type = typeEl.value;
-    const category = categoryEl.value;
+    const category =
+      type === "income" ? "Income" : categoryEl.value;
     const amount = amountEl.value;
     const note = noteEl.value;
 
     if (!amount || (type === "expense" && !category)) {
-      alert("Fill required fields");
+      alert("Fill all required fields");
       return;
     }
 
@@ -60,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify({
         userId: user.id,
         type,
-        category: type === "income" ? "Income" : category,
+        category,
         amount: Number(amount),
         note,
       }),
@@ -68,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     amountEl.value = "";
     noteEl.value = "";
+
     loadTransactions();
     loadCharts();
   };
@@ -79,28 +59,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let income = 0,
       expense = 0;
-    const list = document.getElementById("transactionList");
-    list.innerHTML = "";
+    transactionList.innerHTML = "";
 
     data.forEach((t) => {
-      t.type === "income"
-        ? (income += t.amount)
-        : (expense += t.amount);
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
 
       const li = document.createElement("li");
       li.innerHTML = `
         <span>${t.category}</span>
         <span class="${t.type}">
           ${t.type === "income" ? "+" : "-"}₹${t.amount}
-        </span>`;
-      list.appendChild(li);
+        </span>
+        <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+        <button onclick="deleteTransaction('${t._id}')">🗑️</button>
+      `;
+      transactionList.appendChild(li);
     });
 
     totalIncome.innerText = `₹${income}`;
     totalExpense.innerText = `₹${expense}`;
     balance.innerText = `₹${income - expense}`;
-    checkBudget(expense);
   }
+
+  /* DELETE */
+  window.deleteTransaction = async (id) => {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    loadTransactions();
+    loadCharts();
+  };
+
+  /* EDIT */
+  window.editTransaction = async (id, category, amount, type) => {
+    const newAmount = prompt("Edit amount:", amount);
+    if (!newAmount) return;
+
+    await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category,
+        amount: Number(newAmount),
+        type,
+      }),
+    });
+
+    loadTransactions();
+    loadCharts();
+  };
 
   window.logout = () => {
     localStorage.clear();
