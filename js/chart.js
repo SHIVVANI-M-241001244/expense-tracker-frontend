@@ -1,3 +1,7 @@
+if (!document.getElementById("pieChart")) {
+  // Not on dashboard page → stop executing
+  return;
+}
 let pieChart, barChart, lineChart;
 
 async function loadCharts() {

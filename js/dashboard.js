@@ -1,3 +1,7 @@
+if (!document.getElementById("transactionList")) {
+  // Not on dashboard page → stop executing
+  return;
+}
 const API_URL = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 // Get logged-in user
