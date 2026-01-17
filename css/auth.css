@@ -1,0 +1,56 @@
+/* LOGIN & REGISTER ONLY */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+  font-family: "Poppins", sans-serif;
+}
+
+.card {
+  background: white;
+  width: 360px;
+  padding: 32px;
+  border-radius: 22px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 14px;
+}
+
+.input-group label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #8b7cf6, #b49bff);
+  color: white;
+  font-size: 15px;
+}
+
+.link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 14px;
+}
