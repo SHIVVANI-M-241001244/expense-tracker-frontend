@@ -2,127 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Expense Tracker</title>
-
+  <title>Dashboard</title>
   <link rel="stylesheet" href="css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<body>
 
-<body class="dashboard">
-
-<!-- ===== HEADER ===== -->
 <header class="topbar">
-  <div class="greeting">
-    <h2 id="greetingText">Hello 💜</h2>
-    <p id="greetingSub">Track your money gently</p>
-  </div>
-
-  <div class="top-actions">
-    <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+  <h2 id="greeting">Hello 💜</h2>
+  <div>
+    <button onclick="toggleDarkMode()">🌙</button>
+    <button onclick="logout()">Logout</button>
   </div>
 </header>
 
-<!-- ===== MAIN ===== -->
 <main class="container">
 
-  <!-- SUMMARY -->
-  <section class="summary-grid">
-    <div class="summary-card income">
-      <h4>Total Income</h4>
-      <p id="totalIncome">₹0</p>
-    </div>
+<section class="summary">
+  <div>Total Income <span id="totalIncome">₹0</span></div>
+  <div>Total Expense <span id="totalExpense">₹0</span></div>
+  <div>Balance <span id="balance">₹0</span></div>
+</section>
 
-    <div class="summary-card expense">
-      <h4>Total Expense</h4>
-      <p id="totalExpense">₹0</p>
-    </div>
+<section class="card">
+  <h3>Add Transaction</h3>
 
-    <div class="summary-card balance">
-      <h4>Balance</h4>
-      <p id="balance">₹0</p>
-    </div>
-  </section>
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
 
-  <!-- CONTENT -->
-  <section class="content-grid">
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="Rent">Rent</option>
+    <option value="Hospital">Hospital</option>
+    <option value="Groceries">Groceries</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Transport">Transport</option>
+  </select>
 
-    <!-- LEFT COLUMN -->
-    <div class="left-col">
+  <input type="number" id="amount" placeholder="Amount" />
+  <input type="text" id="note" placeholder="Note" />
 
-      <!-- ADD TRANSACTION -->
-      <div class="card">
-        <h3>Add Transaction</h3>
+  <button onclick="addTransaction()">Add</button>
+</section>
 
-        <select id="type">
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
+<section class="card">
+  <h3>Transactions</h3>
+  <ul id="transactionList"></ul>
+</section>
 
-        <select id="category">
-          <option value="">Select Category</option>
-          <option value="Rent">🏠 Rent</option>
-          <option value="Groceries">🛒 Groceries</option>
-          <option value="Hospital">🏥 Hospital</option>
-          <option value="Entertainment">🎬 Entertainment</option>
-          <option value="Transport">🚕 Transport</option>
-          <option value="Other">📌 Other</option>
-        </select>
+<section class="card">
+  <canvas id="pieChart"></canvas>
+</section>
 
-        <input type="number" id="amount" placeholder="Amount" />
-        <input type="text" id="note" placeholder="Note (optional)" />
+<section class="card">
+  <canvas id="barChart"></canvas>
+</section>
 
-        <button class="btn" onclick="addTransaction()">Add</button>
-      </div>
-
-      <!-- TRANSACTIONS -->
-      <div class="card">
-        <h3>Recent Transactions</h3>
-        <ul id="transactionList"></ul>
-      </div>
-
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div class="right-col">
-
-      <div class="card chart-card">
-        <h3>Expense Distribution</h3>
-        <canvas id="pieChart"></canvas>
-      </div>
-
-      <div class="card chart-card">
-        <h3>Income vs Expense</h3>
-        <canvas id="barChart"></canvas>
-      </div>
-
-    </div>
-
-  </section>
 </main>
 
-<!-- EXISTING JS (UNCHANGED) -->
 <script src="js/dashboard_v2.js"></script>
 <script src="js/chart.js"></script>
-
-<!-- GREETING (UI ONLY) -->
-<script>
-  (function () {
-    const h = new Date().getHours();
-    const greet =
-      h < 12 ? "Good Morning" :
-      h < 18 ? "Good Afternoon" :
-      "Good Evening";
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    const name = user?.name ? `, ${user.name}` : "";
-
-    document.getElementById("greetingText").innerText =
-      `${greet}${name} 💜`;
-    document.getElementById("greetingSub").innerText =
-      "Track your money gently";
-  })();
-</script>
-
 </body>
 </html>

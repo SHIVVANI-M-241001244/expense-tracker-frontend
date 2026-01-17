@@ -2,9 +2,7 @@ console.log("AUTH JS LOADED");
 
 const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
-/* =========================
-   REGISTER
-========================= */
+/* ================= REGISTER ================= */
 async function register() {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -37,9 +35,7 @@ async function register() {
   }
 }
 
-/* =========================
-   LOGIN
-========================= */
+/* ================= LOGIN ================= */
 async function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -63,17 +59,16 @@ async function login() {
       return;
     }
 
-    // SAVE USER
+    // 🔥 STORE USER CORRECTLY
     localStorage.setItem(
       "user",
       JSON.stringify({
-        id: data.user._id,
+        _id: data.user._id,
         name: data.user.name,
         email: data.user.email,
       })
     );
 
-    alert("Login successful ✅");
     window.location.href = "dashboard.html";
   } catch (err) {
     alert("Server error");
