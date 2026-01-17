@@ -1,42 +1,6 @@
 /*******************************
-  DARK MODE (SAFE)
+  DARK MODE
 ********************************/
-function setGreeting() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) return;
-
-  const hour = new Date().getHours();
-  let greeting = "";
-  let sub = "";
-  let emoji = "";
-
-  if (hour >= 5 && hour < 12) {
-    greeting = "Good Morning";
-    emoji = "☀️";
-    sub = "Let’s make today financially calm & confident ✨";
-  } else if (hour >= 12 && hour < 17) {
-    greeting = "Good Afternoon";
-    emoji = "🌤️";
-    sub = "Small steps today build strong habits 💛";
-  } else if (hour >= 17 && hour < 21) {
-    greeting = "Good Evening";
-    emoji = "🌆";
-    sub = "You’re doing great — every rupee counts 💜";
-  } else {
-    greeting = "Good Night";
-    emoji = "🌙";
-    sub = "Track gently, rest peacefully 🤍";
-  }
-
-  document.getElementById(
-    "greetingText"
-  ).innerText = `${greeting}, ${user.name} ${emoji}`;
-
-  document.getElementById("greetingSub").innerText = sub;
-}
-
-setGreeting();
-
 if (localStorage.getItem("dark") === "true") {
   document.body.classList.add("dark");
 }
@@ -50,10 +14,9 @@ function toggleDarkMode() {
 }
 
 /*******************************
-  AUTH CHECK
+  AUTH
 ********************************/
 const user = JSON.parse(localStorage.getItem("user"));
-
 if (!user || !user.id) {
   alert("Please login again");
   window.location.href = "login.html";
@@ -62,18 +25,36 @@ if (!user || !user.id) {
 /*******************************
   GREETING
 ********************************/
-const usernameEl = document.getElementById("username");
-if (usernameEl) {
+function setGreeting() {
   const hour = new Date().getHours();
   let greet = "Hello";
+  let sub = "";
+  let emoji = "";
 
-  if (hour >= 5 && hour < 12) greet = "Good Morning";
-  else if (hour >= 12 && hour < 17) greet = "Good Afternoon";
-  else if (hour >= 17 && hour < 21) greet = "Good Evening";
-  else greet = "Good Night";
+  if (hour >= 5 && hour < 12) {
+    greet = "Good Morning";
+    emoji = "☀️";
+    sub = "Let’s make today financially calm ✨";
+  } else if (hour >= 12 && hour < 17) {
+    greet = "Good Afternoon";
+    emoji = "🌤️";
+    sub = "Small steps build strong habits 💛";
+  } else if (hour >= 17 && hour < 21) {
+    greet = "Good Evening";
+    emoji = "🌆";
+    sub = "Every rupee counts 💜";
+  } else {
+    greet = "Good Night";
+    emoji = "🌙";
+    sub = "Track gently, rest peacefully 🤍";
+  }
 
-  usernameEl.innerText = `${greet}, ${user.name}`;
+  document.getElementById("greetingText").innerText =
+    `${greet}, ${user.name} ${emoji}`;
+  document.getElementById("greetingSub").innerText = sub;
 }
+
+setGreeting();
 
 /*******************************
   API
@@ -85,15 +66,10 @@ const API =
   ADD TRANSACTION
 ********************************/
 async function addTransaction() {
-  const typeEl = document.getElementById("type");
-  const categoryEl = document.getElementById("category");
-  const amountEl = document.getElementById("amount");
-  const noteEl = document.getElementById("note");
-
-  const type = typeEl.value;
-  const category = categoryEl.value;
-  const amount = amountEl.value;
-  const note = noteEl.value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const amount = document.getElementById("amount").value;
+  const note = document.getElementById("note").value;
 
   if (!amount) {
     alert("Amount is required");
@@ -101,78 +77,83 @@ async function addTransaction() {
   }
 
   if (type === "expense" && !category) {
-    alert("Please select a category");
+    alert("Select a category");
     return;
   }
 
-  const payload = {
-    userId: user.id,
-    type,
-    category: type === "income" ? "Income" : category,
-    amount: Number(amount),
-    note
-  };
+  await fetch(`${API}/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: user.id,
+      type,
+      category: type === "income" ? "Income" : category,
+      amount: Number(amount),
+      note,
+    }),
+  });
 
-  try {
-    const res = await fetch(`${API}/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  document.getElementById("amount").value = "";
+  document.getElementById("note").value = "";
+  document.getElementById("category").value = "";
 
-    if (!res.ok) throw new Error("Save failed");
-
-    // Clear inputs
-    amountEl.value = "";
-    noteEl.value = "";
-    categoryEl.value = "";
-
-    loadTransactions();
-  } catch (err) {
-    console.error(err);
-    alert("Transaction not saved ❌");
-  }
+  loadTransactions();
 }
 
 /*******************************
   LOAD TRANSACTIONS
 ********************************/
 async function loadTransactions() {
-  try {
-    const res = await fetch(`${API}/${user.id}`);
-    const data = await res.json();
+  const res = await fetch(`${API}/${user.id}`);
+  const data = await res.json();
 
-    let income = 0;
-    let expense = 0;
+  let income = 0;
+  let expense = 0;
 
-    const list = document.getElementById("transactionList");
-    list.innerHTML = "";
+  const list = document.getElementById("transactionList");
+  list.innerHTML = "";
 
-    data.forEach((t) => {
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+  data.forEach((t) => {
+    if (t.type === "income") income += t.amount;
+    else expense += t.amount;
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span>${t.category}</span>
-        <span>₹${t.amount}</span>
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${t.category} – ₹${t.amount}</span>
+      <div>
+        <button onclick="editTx('${t._id}', '${t.category}', ${t.amount})">✏️</button>
         <button onclick="deleteTx('${t._id}')">🗑️</button>
-      `;
-      list.appendChild(li);
-    });
+      </div>
+    `;
+    list.appendChild(li);
+  });
 
-    document.getElementById("totalIncome").innerText = `₹${income}`;
-    document.getElementById("totalExpense").innerText = `₹${expense}`;
-    document.getElementById("balance").innerText = `₹${income - expense}`;
+  document.getElementById("totalIncome").innerText = `₹${income}`;
+  document.getElementById("totalExpense").innerText = `₹${expense}`;
+  document.getElementById("balance").innerText = `₹${income - expense}`;
 
-    // Charts
-    if (typeof renderCharts === "function") {
-      renderCharts(data);
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load transactions");
+  if (typeof renderCharts === "function") {
+    renderCharts(data);
   }
+}
+
+/*******************************
+  EDIT TRANSACTION
+********************************/
+async function editTx(id, oldCategory, oldAmount) {
+  const newAmount = prompt("Edit amount:", oldAmount);
+  if (!newAmount) return;
+
+  await fetch(`${API}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      category: oldCategory,
+      amount: Number(newAmount),
+    }),
+  });
+
+  loadTransactions();
 }
 
 /*******************************

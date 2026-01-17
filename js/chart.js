@@ -1,48 +1,75 @@
-let pieChart = null;
-let barChart = null;
+let pieChart, barChart;
 
-function renderCharts(transactions) {
-  let income = 0;
-  let expense = 0;
-  const categories = {};
+function loadCharts(transactions = []) {
+  const expenseMap = {};
+  let income = 0, expense = 0;
 
-  transactions.forEach((t) => {
-    if (t.type === "income") {
-      income += t.amount;
-    } else {
+  transactions.forEach(t => {
+    if (t.type === "expense") {
       expense += t.amount;
-      categories[t.category] =
-        (categories[t.category] || 0) + t.amount;
+      expenseMap[t.category] =
+        (expenseMap[t.category] || 0) + t.amount;
+    } else {
+      income += t.amount;
     }
   });
 
-  // Pie chart
+  /* ========= PIE CHART ========= */
+  const pieCtx = document.getElementById("pieChart");
   if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
+
+  pieChart = new Chart(pieCtx, {
     type: "doughnut",
     data: {
-      labels: Object.keys(categories),
+      labels: Object.keys(expenseMap),
       datasets: [{
-        data: Object.values(categories),
+        data: Object.values(expenseMap),
         backgroundColor: [
-          "#ff7675","#74b9ff","#55efc4",
-          "#ffeaa7","#a29bfe","#fd79a8"
-        ]
+          "#f472b6",
+          "#a78bfa",
+          "#34d399",
+          "#60a5fa",
+          "#fb7185",
+          "#facc15"
+        ],
+        borderWidth: 0
       }]
+    },
+    options: {
+      responsive:false,
+      maintainAspectRatio:false,
+      cutout: "70%",
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth:10,
+            padding: 12,
+            usePointStyle: true
+          }
+        }
+      }
     }
   });
 
-  // Bar chart
+  /* ========= BAR CHART ========= */
+  const barCtx = document.getElementById("barChart");
   if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById("barChart"), {
+
+  barChart = new Chart(barCtx, {
     type: "bar",
     data: {
       labels: ["Income", "Expense"],
       datasets: [{
         data: [income, expense],
-        backgroundColor: ["#00cec9", "#ff7675"]
+        backgroundColor: ["#34d399", "#f87171"],
+        borderRadius: 12
       }]
     },
-    options: { plugins: { legend: { display: false } } }
+    options: {
+      plugins: {
+        legend: { display: false }
+      }
+    }
   });
 }
