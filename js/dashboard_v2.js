@@ -1,16 +1,15 @@
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
-// AUTH CHECK
+// AUTH
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user || !user.id) {
   alert("Please login again");
   window.location.href = "login.html";
 }
 
-// Greeting
 document.getElementById("username").innerText = user.name;
 
-// ================= ADD TRANSACTION =================
+// ADD TRANSACTION
 async function addTransaction() {
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
@@ -23,7 +22,7 @@ async function addTransaction() {
   }
 
   if (type === "expense" && !category) {
-    alert("Please select a category");
+    alert("Select a category");
     return;
   }
 
@@ -35,47 +34,40 @@ async function addTransaction() {
     note,
   };
 
-  console.log("SENDING →", payload);
+  console.log("SENDING:", payload);
 
-  try {
-    const res = await fetch(`${API}/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  const res = await fetch(`${API}/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 
-    const data = await res.json();
-    console.log("RESPONSE ←", data);
+  const data = await res.json();
+  console.log("RESPONSE:", data);
 
-    if (!res.ok) {
-      alert(data.message || "Failed to save");
-      return;
-    }
-
-    // Clear fields
-    document.getElementById("amount").value = "";
-    document.getElementById("note").value = "";
-    document.getElementById("category").value = "";
-
-    loadTransactions();
-  } catch (err) {
-    console.error(err);
-    alert("Backend not reachable");
+  if (!res.ok) {
+    alert("Failed to save");
+    return;
   }
+
+  document.getElementById("amount").value = "";
+  document.getElementById("note").value = "";
+  document.getElementById("category").value = "";
+
+  loadTransactions();
 }
 
-// ================= LOAD TRANSACTIONS =================
+// LOAD
 async function loadTransactions() {
   const res = await fetch(`${API}/${user.id}`);
   const data = await res.json();
 
   let income = 0;
   let expense = 0;
-
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  data.forEach((t) => {
+  data.forEach(t => {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
 
@@ -96,22 +88,21 @@ async function loadTransactions() {
   }
 }
 
-// ================= DELETE =================
+// DELETE
 async function deleteTx(id) {
   await fetch(`${API}/${id}`, { method: "DELETE" });
   loadTransactions();
 }
 
-// ================= DARK MODE =================
+// DARK MODE
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
 }
 
-// ================= LOGOUT =================
+// LOGOUT
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
-// INIT
 loadTransactions();
