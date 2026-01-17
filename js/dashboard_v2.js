@@ -1,70 +1,41 @@
-/*******************************
-  DARK MODE
-********************************/
-if (localStorage.getItem("dark") === "true") {
-  document.body.classList.add("dark");
-}
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "dark",
-    document.body.classList.contains("dark")
-  );
-}
-
-/*******************************
-  AUTH
-********************************/
+/* ================= AUTH ================= */
 const user = JSON.parse(localStorage.getItem("user"));
-if (!user || !user.id) {
+if (!user || !user._id) {
   alert("Please login again");
   window.location.href = "login.html";
 }
 
-/*******************************
-  GREETING
-********************************/
+const USER_ID = user._id;
+const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+
+/* ================= GREETING ================= */
 function setGreeting() {
   const hour = new Date().getHours();
   let greet = "Hello";
   let sub = "";
-  let emoji = "";
 
   if (hour >= 5 && hour < 12) {
     greet = "Good Morning";
-    emoji = "☀️";
     sub = "Let’s make today financially calm ✨";
   } else if (hour >= 12 && hour < 17) {
     greet = "Good Afternoon";
-    emoji = "🌤️";
     sub = "Small steps build strong habits 💛";
   } else if (hour >= 17 && hour < 21) {
     greet = "Good Evening";
-    emoji = "🌆";
     sub = "Every rupee counts 💜";
   } else {
     greet = "Good Night";
-    emoji = "🌙";
     sub = "Track gently, rest peacefully 🤍";
   }
 
   document.getElementById("greetingText").innerText =
-    `${greet}, ${user.name} ${emoji}`;
+    `${greet}, ${user.name}`;
   document.getElementById("greetingSub").innerText = sub;
 }
 
 setGreeting();
 
-/*******************************
-  API
-********************************/
-const API =
-  "https://shivvani-m-expense-backend.onrender.com/api/transactions";
-
-/*******************************
-  ADD TRANSACTION
-********************************/
+/* ================= ADD ================= */
 async function addTransaction() {
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
@@ -72,12 +43,12 @@ async function addTransaction() {
   const note = document.getElementById("note").value;
 
   if (!amount) {
-    alert("Amount is required");
+    alert("Amount required");
     return;
   }
 
   if (type === "expense" && !category) {
-    alert("Select a category");
+    alert("Select category");
     return;
   }
 
@@ -85,12 +56,12 @@ async function addTransaction() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      userId: user.id,
+      userId: USER_ID,
       type,
       category: type === "income" ? "Income" : category,
       amount: Number(amount),
-      note,
-    }),
+      note
+    })
   });
 
   document.getElementById("amount").value = "";
@@ -100,11 +71,9 @@ async function addTransaction() {
   loadTransactions();
 }
 
-/*******************************
-  LOAD TRANSACTIONS
-********************************/
+/* ================= LOAD ================= */
 async function loadTransactions() {
-  const res = await fetch(`${API}/${user.id}`);
+  const res = await fetch(`${API}/${USER_ID}`);
   const data = await res.json();
 
   let income = 0;
@@ -113,7 +82,7 @@ async function loadTransactions() {
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  data.forEach((t) => {
+  data.forEach(t => {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
 
@@ -131,34 +100,26 @@ async function loadTransactions() {
   document.getElementById("totalIncome").innerText = `₹${income}`;
   document.getElementById("totalExpense").innerText = `₹${expense}`;
   document.getElementById("balance").innerText = `₹${income - expense}`;
-
-  if (typeof renderCharts === "function") {
-    renderCharts(data);
-  }
 }
 
-/*******************************
-  EDIT TRANSACTION
-********************************/
-async function editTx(id, oldCategory, oldAmount) {
-  const newAmount = prompt("Edit amount:", oldAmount);
+/* ================= EDIT ================= */
+async function editTx(id, category, amount) {
+  const newAmount = prompt("Edit amount", amount);
   if (!newAmount) return;
 
   await fetch(`${API}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      category: oldCategory,
-      amount: Number(newAmount),
-    }),
+      category,
+      amount: Number(newAmount)
+    })
   });
 
   loadTransactions();
 }
 
-/*******************************
-  DELETE TRANSACTION
-********************************/
+/* ================= DELETE ================= */
 async function deleteTx(id) {
   if (!confirm("Delete this transaction?")) return;
 
@@ -166,15 +127,16 @@ async function deleteTx(id) {
   loadTransactions();
 }
 
-/*******************************
-  LOGOUT
-********************************/
+/* ================= DARK MODE ================= */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+}
+
+/* ================= LOGOUT ================= */
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
-/*******************************
-  INIT
-********************************/
+/* ================= INIT ================= */
 loadTransactions();
