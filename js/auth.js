@@ -1,6 +1,6 @@
-const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
-
 console.log("AUTH JS LOADED");
+
+const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
 /* =========================
    REGISTER
@@ -24,7 +24,7 @@ async function register() {
   const data = await res.json();
 
   if (!res.ok) {
-    alert(data.message || "Register failed");
+    alert(data.message || "Registration failed");
     return;
   }
 
@@ -51,16 +51,22 @@ async function login() {
   });
 
   const data = await res.json();
-  console.log("LOGIN RESPONSE:", data);
 
   if (!res.ok) {
     alert(data.message || "Login failed");
     return;
   }
 
-  // 🔥 SAVE EXACT BACKEND RESPONSE
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user", JSON.stringify(data.user));
+  // ✅ THIS IS THE MOST IMPORTANT PART
+  localStorage.setItem(
+    "user",
+    JSON.stringify({
+      _id: data.user._id,
+      name: data.user.name,
+      email: data.user.email,
+      token: data.token,
+    })
+  );
 
   window.location.href = "dashboard.html";
 }
