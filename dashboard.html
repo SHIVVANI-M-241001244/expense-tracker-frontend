@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <title>Expense Tracker</title>
+
+  <!-- DASHBOARD CSS -->
   <link rel="stylesheet" href="/css/dashboard.css" />
+
+  <!-- CHART.JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body class="dashboard">
 
   <!-- HEADER -->
@@ -19,7 +24,7 @@
 
   <main class="container">
 
-    <!-- SUMMARY -->
+    <!-- SUMMARY CARDS -->
     <section class="summary-grid">
       <div class="summary-card income">
         <h4>Total Income</h4>
@@ -37,7 +42,7 @@
       </div>
     </section>
 
-    <!-- CONTENT GRID -->
+    <!-- MAIN CONTENT -->
     <section class="content-grid">
 
       <!-- LEFT COLUMN -->
@@ -60,10 +65,8 @@
             <option value="expense">Expense</option>
           </select>
 
-          <input type="text" id="category" placeholder="Category" />
-          <input type="number" id="amount" placeholder="Amount" />
-          <input type="text" id="note" placeholder="Note (optional)" />
-           <select id="category">
+          <!-- CATEGORY DROPDOWN -->
+          <select id="category">
             <option value="">Select Category</option>
             <option value="Rent">🏠 Rent</option>
             <option value="Essentials">🧺 Essentials</option>
@@ -75,10 +78,12 @@
             <option value="Shopping">🛍️ Shopping</option>
             <option value="Savings">💰 Savings</option>
             <option value="Other">📌 Other</option>
-            </select>
+          </select>
+
+          <input type="number" id="amount" placeholder="Amount" />
+          <input type="text" id="note" placeholder="Note (optional)" />
 
           <button class="btn" id="addBtn" onclick="addTransaction()">Add</button>
-
         </div>
 
         <!-- TRANSACTIONS -->
@@ -86,9 +91,10 @@
           <h3>Recent Transactions</h3>
           <ul id="transactionList"></ul>
         </div>
+
       </div>
 
-      <!-- RIGHT COLUMN (CHARTS) -->
+      <!-- RIGHT COLUMN (CHARTS STACKED) -->
       <div class="right-col">
 
         <div class="card">
@@ -107,11 +113,12 @@
         </div>
 
       </div>
-
     </section>
   </main>
 
+  <!-- DASHBOARD JS -->
   <script src="/js/dashboard.js"></script>
   <script src="/js/chart.js"></script>
+
 </body>
 </html>
