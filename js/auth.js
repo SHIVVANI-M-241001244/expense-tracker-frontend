@@ -1,12 +1,14 @@
 const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
+console.log("AUTH JS LOADED");
+
 /* =========================
    REGISTER
 ========================= */
 async function register() {
-  const name = document.getElementById("name")?.value.trim();
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!name || !email || !password) {
     alert("All fields are required");
@@ -31,7 +33,6 @@ async function register() {
     window.location.href = "login.html";
   } catch (err) {
     alert("Server error");
-    console.error(err);
   }
 }
 
@@ -39,8 +40,8 @@ async function register() {
    LOGIN
 ========================= */
 async function login() {
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!email || !password) {
     alert("Email and password required");
@@ -61,7 +62,7 @@ async function login() {
       return;
     }
 
-    // ✅ STORE USER (IMPORTANT)
+    // ✅ STORE USER CORRECTLY
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -75,16 +76,5 @@ async function login() {
     window.location.href = "dashboard.html";
   } catch (err) {
     alert("Server error");
-    console.error(err);
   }
 }
-
-/* =========================
-   AUTO REDIRECT
-========================= */
-(function () {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && window.location.pathname.includes("login")) {
-    window.location.href = "dashboard.html";
-  }
-})();
