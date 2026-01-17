@@ -10,11 +10,10 @@
 
 <body class="dashboard">
 
-<!-- ================= HEADER ================= -->
 <header class="topbar">
   <div class="greeting">
     <h2 id="greetingText">Hello 💜</h2>
-    <p id="greetingSub">Welcome back</p>
+    <p id="greetingSub">Track your money gently</p>
   </div>
 
   <div class="top-actions">
@@ -23,79 +22,81 @@
   </div>
 </header>
 
-<!-- ================= MAIN ================= -->
 <main class="container">
 
   <!-- SUMMARY -->
-  <section class="summary">
-    <div>Total Income <span id="totalIncome">₹0</span></div>
-    <div>Total Expense <span id="totalExpense">₹0</span></div>
-    <div>Balance <span id="balance">₹0</span></div>
+  <section class="summary-grid">
+    <div class="summary-card income">
+      <h4>Total Income</h4>
+      <p id="totalIncome">₹0</p>
+    </div>
+
+    <div class="summary-card expense">
+      <h4>Total Expense</h4>
+      <p id="totalExpense">₹0</p>
+    </div>
+
+    <div class="summary-card balance">
+      <h4>Balance</h4>
+      <p id="balance">₹0</p>
+    </div>
   </section>
 
-  <!-- ADD TRANSACTION -->
-  <section class="card">
-    <h3>Add Transaction</h3>
+  <!-- CONTENT -->
+  <section class="content-grid">
 
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
+    <!-- LEFT -->
+    <div class="left-col">
 
-    <select id="category">
-      <option value="">Select Category</option>
-      <option value="Rent">🏠 Rent</option>
-      <option value="Hospital">🏥 Hospital</option>
-      <option value="Groceries">🛒 Groceries</option>
-      <option value="Entertainment">🎬 Entertainment</option>
-      <option value="Transport">🚕 Transport</option>
-      <option value="Other">📌 Other</option>
-    </select>
+      <div class="card">
+        <h3>Add Transaction</h3>
 
-    <input type="number" id="amount" placeholder="Amount" />
-    <input type="text" id="note" placeholder="Note (optional)" />
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
 
-    <button onclick="addTransaction()">Add</button>
+        <select id="category">
+          <option value="">Select Category</option>
+          <option value="Rent">🏠 Rent</option>
+          <option value="Groceries">🛒 Groceries</option>
+          <option value="Hospital">🏥 Hospital</option>
+          <option value="Entertainment">🎬 Entertainment</option>
+          <option value="Transport">🚕 Transport</option>
+          <option value="Other">📌 Other</option>
+        </select>
+
+        <input type="number" id="amount" placeholder="Amount" />
+        <input type="text" id="note" placeholder="Note (optional)" />
+
+        <button class="btn" onclick="addTransaction()">Add</button>
+      </div>
+
+      <div class="card">
+        <h3>Recent Transactions</h3>
+        <ul id="transactionList"></ul>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-col">
+      <div class="card chart-card">
+        <h3>Expense Distribution</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+
+      <div class="card chart-card">
+        <h3>Income vs Expense</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
   </section>
-
-  <!-- TRANSACTIONS -->
-  <section class="card">
-    <h3>Transactions</h3>
-    <ul id="transactionList"></ul>
-  </section>
-
-  <!-- PIE CHART -->
-  <section class="card">
-    <h3>Expense Distribution</h3>
-    <canvas id="pieChart"></canvas>
-  </section>
-
-  <!-- BAR CHART -->
-  <section class="card">
-    <h3>Income vs Expense</h3>
-    <canvas id="barChart"></canvas>
-  </section>
-
 </main>
 
-<!-- ================= SCRIPTS ================= -->
-<script src="/js/dashboard_v2.js"></script>
-<script src="/js/chart.js"></script>
-
-<script>
-  // Show category only for expense
-  const typeEl = document.getElementById("type");
-  const categoryEl = document.getElementById("category");
-
-  function toggleCategory() {
-    categoryEl.style.display =
-      typeEl.value === "expense" ? "block" : "none";
-    if (typeEl.value === "income") categoryEl.value = "";
-  }
-
-  typeEl.addEventListener("change", toggleCategory);
-  toggleCategory();
-</script>
+<script src="js/dashboard_v2.js"></script>
+<script src="js/chart.js"></script>
 
 </body>
 </html>
