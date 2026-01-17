@@ -4,9 +4,9 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
    REGISTER
 ========================= */
 async function register() {
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!name || !email || !password) {
     alert("All fields are required");
@@ -28,9 +28,10 @@ async function register() {
     }
 
     alert("Registration successful ✅");
-    window.location.href = "/login.html";
+    window.location.href = "login.html";
   } catch (err) {
     alert("Server error");
+    console.error(err);
   }
 }
 
@@ -38,8 +39,8 @@ async function register() {
    LOGIN
 ========================= */
 async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
     alert("Email and password required");
@@ -60,18 +61,21 @@ async function login() {
       return;
     }
 
+    // ✅ STORE USER (IMPORTANT)
     localStorage.setItem(
       "user",
       JSON.stringify({
-        _id: data.user._id,
+        id: data.user._id,
         name: data.user.name,
         email: data.user.email,
       })
     );
 
-    window.location.href = "/dashboard.html";
+    // ✅ REDIRECT
+    window.location.href = "dashboard.html";
   } catch (err) {
     alert("Server error");
+    console.error(err);
   }
 }
 
@@ -80,13 +84,7 @@ async function login() {
 ========================= */
 (function () {
   const user = JSON.parse(localStorage.getItem("user"));
-
-  if (
-    user &&
-    user._id &&
-    (window.location.pathname.includes("login") ||
-     window.location.pathname.includes("register"))
-  ) {
-    window.location.href = "/dashboard.html";
+  if (user && window.location.pathname.includes("login")) {
+    window.location.href = "dashboard.html";
   }
 })();
