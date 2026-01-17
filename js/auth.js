@@ -3,12 +3,10 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 /* =========================
    REGISTER
 ========================= */
-async function register(event) {
-  event.preventDefault();
-
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+async function register() {
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!name || !email || !password) {
     alert("All fields are required");
@@ -30,22 +28,19 @@ async function register(event) {
     }
 
     alert("Registration successful ✅");
-
-    // 🔧 FIXED (absolute path)
     window.location.href = "/login.html";
   } catch (err) {
-    alert("Server error");
+    console.error(err);
+    alert("Server error during registration");
   }
 }
 
 /* =========================
    LOGIN
 ========================= */
-async function login(event) {
-  event.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+async function login() {
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
     alert("Email and password required");
@@ -66,7 +61,7 @@ async function login(event) {
       return;
     }
 
-    // 🔥 SAVE USER (CORRECT)
+    // ✅ Save logged-in user
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -76,10 +71,10 @@ async function login(event) {
       })
     );
 
-    // 🔧 FIXED (absolute path)
     window.location.href = "/dashboard.html";
   } catch (err) {
-    alert("Server error");
+    console.error(err);
+    alert("Server error during login");
   }
 }
 
@@ -89,8 +84,13 @@ async function login(event) {
 (function () {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  if (user && window.location.pathname.includes("login")) {
-    // 🔧 FIXED
+  // If already logged in, prevent staying on login/register
+  if (
+    user &&
+    user._id &&
+    (window.location.pathname.includes("login") ||
+      window.location.pathname.includes("register"))
+  ) {
     window.location.href = "/dashboard.html";
   }
 })();
