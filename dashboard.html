@@ -13,7 +13,11 @@
     <header class="header">
       <h2>Expense Tracker 💜</h2>
       <button class="logout" onclick="logout()">Logout</button>
+      <button class="btn" onclick="toggleDarkMode()">🌙</button>
+
     </header>
+    <p>📅 Report for this month</p>
+
 
     <!-- SUMMARY CARDS -->
     <div class="summary">
@@ -32,6 +36,13 @@
         <p id="balance">₹0</p>
       </div>
     </div>
+    <div class="card">
+  <h3>Monthly Budget</h3>
+  <input type="number" id="budgetInput" placeholder="Enter budget" />
+  <button class="btn" onclick="saveBudget()">Save Budget</button>
+  <p id="budgetStatus"></p>
+</div>
+
 
     <!-- ADD TRANSACTION -->
     <div class="card form-card">

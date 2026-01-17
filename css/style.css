@@ -160,4 +160,23 @@ body {
   gap: 1.5rem;
   margin-top: 2rem;
 }
+body.dark {
+  background: #121212;
+  color: #eaeaea;
+}
 
+body.dark .card {
+  background: #1e1e1e;
+  color: #eaeaea;
+}
+
+body.dark input,
+body.dark select {
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+body.dark .summary-card {
+  opacity: 0.95;
+}

@@ -1,6 +1,5 @@
 // STOP if not on dashboard page
 if (!document.getElementById("transactionList")) {
-  // Not on dashboard page
   return;
 }
 
@@ -13,6 +12,45 @@ const user = JSON.parse(localStorage.getItem("user"));
 // Protect dashboard
 if (!user) {
   window.location.href = "login.html";
+}
+
+/* =========================
+   DARK MODE
+========================= */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "darkMode",
+    document.body.classList.contains("dark")
+  );
+}
+
+// Load dark mode preference
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark");
+}
+
+/* =========================
+   BUDGET FEATURE
+========================= */
+function saveBudget() {
+  const budget = document.getElementById("budgetInput").value;
+  if (!budget) return alert("Enter a budget amount");
+  localStorage.setItem("budget", budget);
+  alert("Budget saved ✅");
+}
+
+function checkBudget(expense) {
+  const budget = localStorage.getItem("budget");
+  const status = document.getElementById("budgetStatus");
+
+  if (!budget || !status) return;
+
+  if (expense > Number(budget)) {
+    status.innerText = "⚠️ Budget exceeded!";
+  } else {
+    status.innerText = "✅ Within budget";
+  }
 }
 
 /* =========================
@@ -32,9 +70,7 @@ async function addTransaction() {
   try {
     await fetch(`${API_URL}/add`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: user.id,
         type,
@@ -44,7 +80,6 @@ async function addTransaction() {
       }),
     });
 
-    // Clear inputs
     document.getElementById("category").value = "";
     document.getElementById("amount").value = "";
     document.getElementById("note").value = "";
@@ -59,6 +94,7 @@ async function addTransaction() {
 
 /* =========================
    LOAD TRANSACTIONS
+   (MONTHLY REPORT)
 ========================= */
 async function loadTransactions() {
   try {
@@ -68,10 +104,14 @@ async function loadTransactions() {
     let income = 0;
     let expense = 0;
 
+    const currentMonth = new Date().getMonth();
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
     transactions.forEach((t) => {
+      const txMonth = new Date(t.createdAt).getMonth();
+      if (txMonth !== currentMonth) return; // monthly filter
+
       if (t.type === "income") income += t.amount;
       else expense += t.amount;
 
@@ -95,6 +135,8 @@ async function loadTransactions() {
     document.getElementById("totalIncome").innerText = `₹${income}`;
     document.getElementById("totalExpense").innerText = `₹${expense}`;
     document.getElementById("balance").innerText = `₹${income - expense}`;
+
+    checkBudget(expense);
   } catch (error) {
     console.error("Failed to load transactions", error);
   }
@@ -131,9 +173,7 @@ async function editTransaction(id, category, amount, type) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         category: newCategory,
         amount: Number(newAmount),
