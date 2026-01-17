@@ -3,112 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <title>Expense Tracker</title>
-
-  <link rel="stylesheet" href="/css/dashboard.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="dashboard">
+<body>
 
-  <!-- HEADER -->
-  <header class="topbar">
-    <h2>Hi, <span id="username">User</span> 💜</h2>
-    <div class="top-actions">
-      <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-  </header>
+<header class="topbar">
+  <h2>Hi, <span id="username">User</span> 💜</h2>
+  <div>
+    <button onclick="toggleDarkMode()">🌙</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+</header>
 
-  <main class="container">
+<main class="container">
 
-    <!-- SUMMARY -->
-    <section class="summary-grid">
-      <div class="summary-card income">
-        <h4>Total Income</h4>
-        <p id="totalIncome">₹0</p>
-      </div>
-      <div class="summary-card expense">
-        <h4>Total Expense</h4>
-        <p id="totalExpense">₹0</p>
-      </div>
-      <div class="summary-card balance">
-        <h4>Balance</h4>
-        <p id="balance">₹0</p>
-      </div>
-    </section>
+<section class="summary">
+  <div>Total Income <span id="totalIncome">₹0</span></div>
+  <div>Total Expense <span id="totalExpense">₹0</span></div>
+  <div>Balance <span id="balance">₹0</span></div>
+</section>
 
-    <section class="content-grid">
+<section class="card">
+  <h3>Add Transaction</h3>
 
-      <!-- LEFT -->
-      <div class="left-col">
+  <select id="type">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
 
-        <!-- ADD TRANSACTION -->
-        <div class="card">
-          <h3>Add Income / Expense</h3>
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="Rent">Rent</option>
+    <option value="Hospital">Hospital</option>
+    <option value="Groceries">Groceries</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Transport">Transport</option>
+    <option value="Other">Other</option>
+  </select>
 
-          <select id="type">
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
+  <input type="number" id="amount" placeholder="Amount" />
+  <input type="text" id="note" placeholder="Note" />
 
-          <select id="category">
-            <option value="">Select Category</option>
-            <option value="Rent">🏠 Rent</option>
-            <option value="Hospital">🏥 Hospital</option>
-            <option value="Groceries">🛒 Groceries</option>
-            <option value="Entertainment">🎬 Entertainment</option>
-            <option value="Transport">🚕 Transport</option>
-            <option value="Education">📚 Education</option>
-            <option value="Shopping">🛍️ Shopping</option>
-            <option value="Other">📌 Other</option>
-          </select>
+  <button onclick="addTransaction()">Add</button>
+</section>
 
-          <input type="number" id="amount" placeholder="Amount" />
-          <input type="text" id="note" placeholder="Note (optional)" />
+<section class="card">
+  <h3>Transactions</h3>
+  <ul id="transactionList"></ul>
+</section>
 
-          <button class="btn" onclick="addTransaction()">Add</button>
-        </div>
+<section class="card">
+  <canvas id="pieChart"></canvas>
+</section>
 
-        <!-- TRANSACTIONS -->
-        <div class="card">
-          <h3>Recent Transactions</h3>
-          <ul id="transactionList"></ul>
-        </div>
+<section class="card">
+  <canvas id="barChart"></canvas>
+</section>
 
-      </div>
+</main>
 
-      <!-- RIGHT -->
-      <div class="right-col">
-        <div class="card">
-          <h3>Expense Distribution</h3>
-          <canvas id="pieChart"></canvas>
-        </div>
-
-        <div class="card">
-          <h3>Income vs Expense</h3>
-          <canvas id="barChart"></canvas>
-        </div>
-      </div>
-
-    </section>
-  </main>
-
-  <script src="/js/dashboard.js"></script>
-  <script src="/js/chart.js"></script>
-
-  <script>
-    const typeEl = document.getElementById("type");
-    const categoryEl = document.getElementById("category");
-
-    function toggleCategory() {
-      categoryEl.style.display =
-        typeEl.value === "expense" ? "block" : "none";
-      if (typeEl.value === "income") categoryEl.value = "";
-    }
-
-    typeEl.addEventListener("change", toggleCategory);
-    toggleCategory();
-  </script>
-
+<script src="js/dashboard.js"></script>
+<script src="js/chart.js"></script>
 </body>
 </html>
