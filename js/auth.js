@@ -1,61 +1,78 @@
-const API_URL = "https://shivvani-m-expense-backend.onrender.com";
+const API_URL =
+  "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
-// REGISTER
+/* =======================
+   REGISTER
+======================= */
 async function register() {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const name = document.getElementById("name")?.value;
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
 
   if (!name || !email || !password) {
     alert("Please fill all fields");
     return;
   }
 
-  const res = await fetch(`${API_URL}/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name, email, password }),
-  });
+  try {
+    const response = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-  const data = await res.json();
+    const data = await response.json();
 
-  if (res.ok) {
+    if (!response.ok) {
+      alert(data.message || "Registration failed");
+      return;
+    }
+
     alert("Registered successfully 🎉");
     window.location.href = "login.html";
-  } else {
-    alert(data.message);
+  } catch (error) {
+    console.error("Register error:", error);
+    alert("Server not reachable. Please try again later.");
   }
 }
 
-// LOGIN
+/* =======================
+   LOGIN
+======================= */
 async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value;
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
     alert("Please fill all fields");
     return;
   }
 
-  const res = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const data = await res.json();
+    const data = await response.json();
 
-  if (res.ok) {
-    // save token + user
+    if (!response.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    // Save token & user safely
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     window.location.href = "dashboard.html";
-  } else {
-    alert(data.message);
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Server not reachable. Please try again later.");
   }
 }
