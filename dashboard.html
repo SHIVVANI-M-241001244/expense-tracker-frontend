@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <title>Expense Tracker</title>
 
-  <!-- DASHBOARD CSS -->
   <link rel="stylesheet" href="/css/dashboard.css" />
-
-  <!-- CHART.JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -15,7 +12,11 @@
 
   <!-- HEADER -->
   <header class="topbar">
-    <h2>Expense Tracker 💜</h2>
+    <div>
+      <h2 id="greeting">Hello 👋</h2>
+      <p id="username"></p>
+    </div>
+
     <div class="top-actions">
       <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
       <button class="logout-btn" onclick="logout()">Logout</button>
@@ -24,7 +25,7 @@
 
   <main class="container">
 
-    <!-- SUMMARY CARDS -->
+    <!-- SUMMARY -->
     <section class="summary-grid">
       <div class="summary-card income">
         <h4>Total Income</h4>
@@ -42,10 +43,9 @@
       </div>
     </section>
 
-    <!-- MAIN CONTENT -->
     <section class="content-grid">
 
-      <!-- LEFT COLUMN -->
+      <!-- LEFT -->
       <div class="left-col">
 
         <!-- BUDGET -->
@@ -65,8 +65,8 @@
             <option value="expense">Expense</option>
           </select>
 
-          <!-- CATEGORY DROPDOWN -->
-          <select id="category">
+          <!-- CATEGORY (ONLY FOR EXPENSE) -->
+          <select id="category" style="display:none">
             <option value="">Select Category</option>
             <option value="Rent">🏠 Rent</option>
             <option value="Essentials">🧺 Essentials</option>
@@ -76,7 +76,6 @@
             <option value="Transport">🚕 Transport</option>
             <option value="Education">📚 Education</option>
             <option value="Shopping">🛍️ Shopping</option>
-            <option value="Savings">💰 Savings</option>
             <option value="Other">📌 Other</option>
           </select>
 
@@ -91,12 +90,10 @@
           <h3>Recent Transactions</h3>
           <ul id="transactionList"></ul>
         </div>
-
       </div>
 
-      <!-- RIGHT COLUMN (CHARTS STACKED) -->
+      <!-- RIGHT -->
       <div class="right-col">
-
         <div class="card">
           <h3>Expense Distribution</h3>
           <canvas id="pieChart"></canvas>
@@ -111,14 +108,12 @@
           <h3>Balance Trend</h3>
           <canvas id="lineChart"></canvas>
         </div>
-
       </div>
+
     </section>
   </main>
 
-  <!-- DASHBOARD JS -->
   <script src="/js/dashboard.js"></script>
   <script src="/js/chart.js"></script>
-
 </body>
 </html>
