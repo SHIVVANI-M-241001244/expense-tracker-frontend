@@ -10,6 +10,7 @@
 
 <body class="dashboard">
 
+<!-- ===== HEADER ===== -->
 <header class="topbar">
   <div class="greeting">
     <h2 id="greetingText">Hello 💜</h2>
@@ -22,6 +23,7 @@
   </div>
 </header>
 
+<!-- ===== MAIN ===== -->
 <main class="container">
 
   <!-- SUMMARY -->
@@ -45,9 +47,10 @@
   <!-- CONTENT -->
   <section class="content-grid">
 
-    <!-- LEFT -->
+    <!-- LEFT COLUMN -->
     <div class="left-col">
 
+      <!-- ADD TRANSACTION -->
       <div class="card">
         <h3>Add Transaction</h3>
 
@@ -72,6 +75,7 @@
         <button class="btn" onclick="addTransaction()">Add</button>
       </div>
 
+      <!-- TRANSACTIONS -->
       <div class="card">
         <h3>Recent Transactions</h3>
         <ul id="transactionList"></ul>
@@ -79,8 +83,9 @@
 
     </div>
 
-    <!-- RIGHT -->
+    <!-- RIGHT COLUMN -->
     <div class="right-col">
+
       <div class="card chart-card">
         <h3>Expense Distribution</h3>
         <canvas id="pieChart"></canvas>
@@ -90,13 +95,34 @@
         <h3>Income vs Expense</h3>
         <canvas id="barChart"></canvas>
       </div>
+
     </div>
 
   </section>
 </main>
 
+<!-- EXISTING JS (UNCHANGED) -->
 <script src="js/dashboard_v2.js"></script>
 <script src="js/chart.js"></script>
+
+<!-- GREETING (UI ONLY) -->
+<script>
+  (function () {
+    const h = new Date().getHours();
+    const greet =
+      h < 12 ? "Good Morning" :
+      h < 18 ? "Good Afternoon" :
+      "Good Evening";
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const name = user?.name ? `, ${user.name}` : "";
+
+    document.getElementById("greetingText").innerText =
+      `${greet}${name} 💜`;
+    document.getElementById("greetingSub").innerText =
+      "Track your money gently";
+  })();
+</script>
 
 </body>
 </html>
