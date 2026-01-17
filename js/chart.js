@@ -1,76 +1,63 @@
-if (!document.getElementById("pieChart")) {
-  // Not on dashboard page → stop executing
-  return;
-}
 let pieChart, barChart, lineChart;
 
-async function loadCharts() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const res = await fetch(`https://shivvani-m-expense-backend.onrender.com/api/transactions/${user.id}`);
-  const transactions = await res.json();
+function loadCharts() {
+  fetch(
+    `https://shivvani-m-expense-backend.onrender.com/api/transactions/${JSON.parse(localStorage.getItem("user")).id}`
+  )
+    .then(res => res.json())
+    .then(data => {
+      const expenseData = {};
+      let income = 0;
+      let expense = 0;
+      let balance = [];
 
-  let income = 0;
-  let expense = 0;
-  let categories = {};
-  let balance = 0;
-  let balanceData = [];
+      data.forEach(t => {
+        if (t.type === "expense") {
+          expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
+          expense += t.amount;
+        } else {
+          income += t.amount;
+        }
+        balance.push(income - expense);
+      });
 
-  transactions.reverse().forEach((t) => {
-    if (t.type === "income") {
-      income += t.amount;
-      balance += t.amount;
-    } else {
-      expense += t.amount;
-      balance -= t.amount;
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+          labels: Object.keys(expenseData),
+          datasets: [{
+            data: Object.values(expenseData),
+            backgroundColor: ["#ff7675", "#74b9ff", "#55efc4", "#ffeaa7"]
+          }]
+        }
+      });
 
-      categories[t.category] =
-        (categories[t.category] || 0) + t.amount;
-    }
-    balanceData.push(balance);
-  });
+      if (barChart) barChart.destroy();
+      barChart = new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+          labels: ["Income", "Expense"],
+          datasets: [{
+            data: [income, expense],
+            backgroundColor: ["#00cec9", "#ff7675"]
+          }]
+        }
+      });
 
-  // PIE CHART (Expense Categories)
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "pie",
-    data: {
-      labels: Object.keys(categories),
-      datasets: [
-        {
-          data: Object.values(categories),
-        },
-      ],
-    },
-  });
-
-  // BAR CHART (Income vs Expense)
-  if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById("barChart"), {
-    type: "bar",
-    data: {
-      labels: ["Income", "Expense"],
-      datasets: [
-        {
-          data: [income, expense],
-        },
-      ],
-    },
-  });
-
-  // LINE CHART (Balance Trend)
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(document.getElementById("lineChart"), {
-    type: "line",
-    data: {
-      labels: balanceData.map((_, i) => i + 1),
-      datasets: [
-        {
-          data: balanceData,
-          fill: false,
-        },
-      ],
-    },
-  });
+      if (lineChart) lineChart.destroy();
+      lineChart = new Chart(document.getElementById("lineChart"), {
+        type: "line",
+        data: {
+          labels: balance.map((_, i) => i + 1),
+          datasets: [{
+            data: balance,
+            borderColor: "#6c5ce7",
+            fill: false
+          }]
+        }
+      });
+    });
 }
 
 loadCharts();

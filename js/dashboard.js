@@ -1,7 +1,6 @@
 // STOP if not on dashboard page
-if (!document.getElementById("transactionList")) {
-  return;
-}
+if (!document.getElementById("transactionList")) return;
+
 const API_URL =
   "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
@@ -9,9 +8,7 @@ const API_URL =
 const user = JSON.parse(localStorage.getItem("user"));
 
 // Protect dashboard
-if (!user) {
-  window.location.href = "login.html";
-}
+if (!user) window.location.href = "login.html";
 
 /* =========================
    DARK MODE
@@ -24,13 +21,12 @@ function toggleDarkMode() {
   );
 }
 
-// Load dark mode preference
 if (localStorage.getItem("darkMode") === "true") {
   document.body.classList.add("dark");
 }
 
 /* =========================
-   BUDGET FEATURE
+   BUDGET
 ========================= */
 function saveBudget() {
   const budget = document.getElementById("budgetInput").value;
@@ -42,22 +38,21 @@ function saveBudget() {
 function checkBudget(expense) {
   const budget = localStorage.getItem("budget");
   const status = document.getElementById("budgetStatus");
-
   if (!budget || !status) return;
 
-  if (expense > Number(budget)) {
-    status.innerText = "⚠️ Budget exceeded!";
-  } else {
-    status.innerText = "✅ Within budget";
-  }
+  status.innerText =
+    expense > Number(budget)
+      ? "⚠️ Budget exceeded!"
+      : "✅ Within budget";
 }
 
 /* =========================
    ADD TRANSACTION
 ========================= */
 async function addTransaction() {
+  const btn = document.getElementById("addBtn");
   const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
+  const category = document.getElementById("category").value.trim();
   const amount = document.getElementById("amount").value;
   const note = document.getElementById("note").value;
 
@@ -67,7 +62,10 @@ async function addTransaction() {
   }
 
   try {
-    await fetch(`${API_URL}/add`, {
+    btn.innerText = "Adding...";
+    btn.disabled = true;
+
+    const res = await fetch(`${API_URL}/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -79,21 +77,31 @@ async function addTransaction() {
       }),
     });
 
+    if (!res.ok) throw new Error("Failed");
+
+    btn.innerText = "Added ✅";
+
     document.getElementById("category").value = "";
     document.getElementById("amount").value = "";
     document.getElementById("note").value = "";
 
     loadTransactions();
     if (typeof loadCharts === "function") loadCharts();
+
+    setTimeout(() => {
+      btn.innerText = "Add";
+      btn.disabled = false;
+    }, 800);
   } catch (error) {
     console.error(error);
     alert("Failed to add transaction ❌");
+    btn.innerText = "Add";
+    btn.disabled = false;
   }
 }
 
 /* =========================
    LOAD TRANSACTIONS
-   (MONTHLY REPORT)
 ========================= */
 async function loadTransactions() {
   try {
@@ -102,17 +110,17 @@ async function loadTransactions() {
 
     let income = 0;
     let expense = 0;
-
     const currentMonth = new Date().getMonth();
+
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
     transactions.forEach((t) => {
-      const txMonth = new Date(t.createdAt).getMonth();
-      if (txMonth !== currentMonth) return; // monthly filter
+      if (new Date(t.createdAt).getMonth() !== currentMonth) return;
 
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+      t.type === "income"
+        ? (income += t.amount)
+        : (expense += t.amount);
 
       const li = document.createElement("li");
       li.innerHTML = `
@@ -120,12 +128,7 @@ async function loadTransactions() {
         <span class="${t.type}">
           ${t.type === "income" ? "+" : "-"}₹${t.amount}
         </span>
-        <button onclick="editTransaction(
-          '${t._id}',
-          '${t.category}',
-          ${t.amount},
-          '${t.type}'
-        )">✏️</button>
+        <button onclick="editTransaction('${t._id}','${t.category}',${t.amount},'${t.type}')">✏️</button>
         <button onclick="deleteTransaction('${t._id}')">🗑️</button>
       `;
       list.appendChild(li);
@@ -137,55 +140,39 @@ async function loadTransactions() {
 
     checkBudget(expense);
   } catch (error) {
-    console.error("Failed to load transactions", error);
+    console.error("Load failed", error);
   }
 }
 
 /* =========================
-   DELETE TRANSACTION
+   DELETE
 ========================= */
 async function deleteTransaction(id) {
   if (!confirm("Delete this transaction?")) return;
 
-  try {
-    await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-    });
-
-    loadTransactions();
-    if (typeof loadCharts === "function") loadCharts();
-  } catch (error) {
-    console.error(error);
-    alert("Delete failed ❌");
-  }
+  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  loadTransactions();
 }
 
 /* =========================
-   EDIT TRANSACTION
+   EDIT
 ========================= */
 async function editTransaction(id, category, amount, type) {
   const newCategory = prompt("Edit category:", category);
   const newAmount = prompt("Edit amount:", amount);
-
   if (!newCategory || !newAmount) return;
 
-  try {
-    await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        category: newCategory,
-        amount: Number(newAmount),
-        type,
-      }),
-    });
+  await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      category: newCategory,
+      amount: Number(newAmount),
+      type,
+    }),
+  });
 
-    loadTransactions();
-    if (typeof loadCharts === "function") loadCharts();
-  } catch (error) {
-    console.error(error);
-    alert("Update failed ❌");
-  }
+  loadTransactions();
 }
 
 /* =========================
@@ -197,6 +184,6 @@ function logout() {
 }
 
 /* =========================
-   INITIAL LOAD
+   INIT
 ========================= */
 loadTransactions();

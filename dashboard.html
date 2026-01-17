@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Expense Tracker</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="/css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="dashboard">
 
   <!-- HEADER -->
   <header class="topbar">
@@ -64,7 +64,8 @@
           <input type="number" id="amount" placeholder="Amount" />
           <input type="text" id="note" placeholder="Note (optional)" />
 
-          <button class="btn" onclick="addTransaction()">Add</button>
+          <button class="btn" id="addBtn" onclick="addTransaction()">Add</button>
+
         </div>
 
         <!-- TRANSACTIONS -->
@@ -97,7 +98,7 @@
     </section>
   </main>
 
-  <script src="js/dashboard.js"></script>
-  <script src="js/chart.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/chart.js"></script>
 </body>
 </html>
