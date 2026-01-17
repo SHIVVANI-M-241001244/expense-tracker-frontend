@@ -1,7 +1,6 @@
-//version 3 - force vercel deploy
-const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
-
 console.log("AUTH JS LOADED");
+
+const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
 /* =========================
    REGISTER
@@ -34,6 +33,7 @@ async function register() {
     window.location.href = "login.html";
   } catch (err) {
     alert("Server error");
+    console.error(err);
   }
 }
 
@@ -63,7 +63,7 @@ async function login() {
       return;
     }
 
-    // ✅ STORE USER CORRECTLY
+    // SAVE USER
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -73,9 +73,10 @@ async function login() {
       })
     );
 
-    // ✅ REDIRECT
+    alert("Login successful ✅");
     window.location.href = "dashboard.html";
   } catch (err) {
     alert("Server error");
+    console.error(err);
   }
 }
