@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h2>Expense Tracker 💜</h2>
+      <button class="logout" onclick="logout()">Logout</button>
+    </header>
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary">
+      <div class="summary-card income">
+        <h4>Total Income</h4>
+        <p id="totalIncome">₹0</p>
+      </div>
+
+      <div class="summary-card expense">
+        <h4>Total Expense</h4>
+        <p id="totalExpense">₹0</p>
+      </div>
+
+      <div class="summary-card balance">
+        <h4>Balance</h4>
+        <p id="balance">₹0</p>
+      </div>
+    </div>
+
+    <!-- ADD TRANSACTION -->
+    <div class="card form-card">
+      <h3>Add Income / Expense</h3>
+
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
+      <input type="text" id="category" placeholder="Category (Food, Salary)" />
+      <input type="number" id="amount" placeholder="Amount" />
+      <input type="text" id="note" placeholder="Note (optional)" />
+
+      <button class="btn" onclick="addTransaction()">Add</button>
+    </div>
+
+    <!-- TRANSACTIONS LIST -->
+    <div class="card">
+      <h3>Recent Transactions</h3>
+      <ul id="transactionList"></ul>
+    </div>
+
+    <!-- CHARTS SECTION -->
+    <div class="charts">
+      <div class="card">
+        <h3>Expense Distribution</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Income vs Expense</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Balance Trend</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMPORTANT: Script order -->
+  <script src="js/dashboard.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/charts.js"></script>
+
+</body>
+</html>
