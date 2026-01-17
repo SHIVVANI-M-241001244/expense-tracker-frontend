@@ -1,59 +1,79 @@
-/********************************
-  AUTH + USER ID (FIXED)
-*********************************/
-const user = JSON.parse(localStorage.getItem("user"));
+/************************************************
+ * DASHBOARD.JS – FINAL STABLE VERSION
+ ************************************************/
 
-if (!user || !(user._id || user.id)) {
+/* ========== DARK MODE ========== */
+if (localStorage.getItem("dark") === "true") {
+  document.body.classList.add("dark");
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "dark",
+    document.body.classList.contains("dark")
+  );
+}
+
+/* ========== AUTH / USER ========== */
+const storedUser = localStorage.getItem("user");
+
+if (!storedUser) {
   alert("Please login again");
   window.location.href = "login.html";
 }
 
-const USER_ID = user._id || user.id;
-const API =
-  "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+const user = JSON.parse(storedUser);
 
-/********************************
-  GREETING (TIME BASED)
-*********************************/
+/* IMPORTANT FIX: support both id and _id */
+const userId = user._id || user.id;
+
+if (!userId) {
+  alert("Invalid user. Please login again.");
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+/* ========== GREETING ========== */
+const usernameEl = document.getElementById("username");
+const greetingTextEl = document.getElementById("greetingText");
+const greetingSubEl = document.getElementById("greetingSub");
+
+if (usernameEl) usernameEl.innerText = user.name || "User";
+
 function setGreeting() {
   const hour = new Date().getHours();
-  let greet = "Hello";
-  let sub = "";
-  let emoji = "";
+  let greeting = "Hello";
 
-  if (hour >= 5 && hour < 12) {
-    greet = "Good Morning";
-    emoji = "☀️";
-    sub = "Let’s make today financially calm ✨";
-  } else if (hour >= 12 && hour < 17) {
-    greet = "Good Afternoon";
-    emoji = "🌤️";
-    sub = "Small steps build strong habits 💛";
-  } else if (hour >= 17 && hour < 21) {
-    greet = "Good Evening";
-    emoji = "🌆";
-    sub = "Every rupee counts 💜";
-  } else {
-    greet = "Good Night";
-    emoji = "🌙";
-    sub = "Track gently, rest peacefully 🤍";
+  if (hour < 12) greeting = "Good Morning";
+  else if (hour < 17) greeting = "Good Afternoon";
+  else greeting = "Good Evening";
+
+  if (greetingTextEl) {
+    greetingTextEl.innerText = `${greeting}, ${user.name} 💜`;
   }
 
-  document.getElementById("greetingText").innerText =
-    `${greet}, ${user.name} ${emoji}`;
-  document.getElementById("greetingSub").innerText = sub;
+  if (greetingSubEl) {
+    greetingSubEl.innerText = "Let’s track your finances beautifully ✨";
+  }
 }
 
 setGreeting();
 
-/********************************
-  ADD TRANSACTION
-*********************************/
+/* ========== API ========== */
+const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+
+/* ========== ADD TRANSACTION ========== */
 async function addTransaction() {
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const amount = document.getElementById("amount").value;
-  const note = document.getElementById("note").value;
+  const typeEl = document.getElementById("type");
+  const categoryEl = document.getElementById("category");
+  const amountEl = document.getElementById("amount");
+  const noteEl = document.getElementById("note");
+
+  const type = typeEl.value;
+  const category = categoryEl.value;
+  const amount = amountEl.value;
+  const note = noteEl.value;
 
   if (!amount) {
     alert("Amount is required");
@@ -65,103 +85,134 @@ async function addTransaction() {
     return;
   }
 
-  await fetch(`${API}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: USER_ID,
-      type,
-      category: type === "income" ? "Income" : category,
-      amount: Number(amount),
-      note,
-    }),
-  });
+  const payload = {
+    userId: userId,
+    type: type,
+    category: type === "income" ? "Income" : category,
+    amount: Number(amount),
+    note: note || ""
+  };
 
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  document.getElementById("category").value = "";
+  try {
+    const res = await fetch(`${API}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  loadTransactions();
+    if (!res.ok) throw new Error("Add failed");
+
+    amountEl.value = "";
+    noteEl.value = "";
+    categoryEl.value = "";
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add transaction ❌");
+  }
 }
 
-/********************************
-  LOAD TRANSACTIONS
-*********************************/
+/* ========== LOAD TRANSACTIONS ========== */
 async function loadTransactions() {
-  const res = await fetch(`${API}/${USER_ID}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API}/${userId}`);
+    if (!res.ok) throw new Error("Fetch failed");
 
-  let income = 0;
-  let expense = 0;
+    const transactions = await res.json();
 
-  const list = document.getElementById("transactionList");
-  list.innerHTML = "";
+    let income = 0;
+    let expense = 0;
 
-  data.forEach((t) => {
-    if (t.type === "income") income += t.amount;
-    else expense += t.amount;
+    const list = document.getElementById("transactionList");
+    list.innerHTML = "";
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${t.category} – ₹${t.amount}</span>
-      <div>
-        <button onclick="editTx('${t._id}', '${t.category}', ${t.amount})">✏️</button>
-        <button onclick="deleteTx('${t._id}')">🗑️</button>
-      </div>
-    `;
-    list.appendChild(li);
-  });
+    transactions.forEach(tx => {
+      if (tx.type === "income") income += tx.amount;
+      else expense += tx.amount;
 
-  document.getElementById("totalIncome").innerText = `₹${income}`;
-  document.getElementById("totalExpense").innerText = `₹${expense}`;
-  document.getElementById("balance").innerText = `₹${income - expense}`;
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${tx.category}</span>
+        <span class="${tx.type}">
+          ${tx.type === "income" ? "+" : "-"}₹${tx.amount}
+        </span>
+        <div>
+          <button onclick="editTransaction('${tx._id}', '${tx.category}', ${tx.amount}, '${tx.type}')">✏️</button>
+          <button onclick="deleteTransaction('${tx._id}')">🗑️</button>
+        </div>
+      `;
+      list.appendChild(li);
+    });
+
+    document.getElementById("totalIncome").innerText = `₹${income}`;
+    document.getElementById("totalExpense").innerText = `₹${expense}`;
+    document.getElementById("balance").innerText = `₹${income - expense}`;
+
+    /* SEND DATA TO CHARTS */
+    if (typeof renderCharts === "function") {
+      renderCharts(transactions);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load transactions ❌");
+  }
 }
 
-/********************************
-  EDIT TRANSACTION
-*********************************/
-async function editTx(id, category, amount) {
-  const newAmount = prompt("Edit amount", amount);
-  if (!newAmount) return;
-
-  await fetch(`${API}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      category,
-      amount: Number(newAmount),
-    }),
-  });
-
-  loadTransactions();
-}
-
-/********************************
-  DELETE TRANSACTION
-*********************************/
-async function deleteTx(id) {
+/* ========== DELETE ========== */
+async function deleteTransaction(id) {
   if (!confirm("Delete this transaction?")) return;
 
-  await fetch(`${API}/${id}`, { method: "DELETE" });
-  loadTransactions();
+  try {
+    const res = await fetch(`${API}/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) throw new Error("Delete failed");
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Delete failed ❌");
+  }
 }
 
-/********************************
-  DARK MODE
-*********************************/
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
+/* ========== EDIT ========== */
+async function editTransaction(id, category, amount, type) {
+  const newCategory =
+    type === "expense"
+      ? prompt("Edit category:", category)
+      : "Income";
+
+  const newAmount = prompt("Edit amount:", amount);
+
+  if (!newAmount || (type === "expense" && !newCategory)) return;
+
+  try {
+    const res = await fetch(`${API}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category: newCategory,
+        amount: Number(newAmount),
+        type
+      })
+    });
+
+    if (!res.ok) throw new Error("Update failed");
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Update failed ❌");
+  }
 }
 
-/********************************
-  LOGOUT
-*********************************/
+/* ========== LOGOUT ========== */
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
-/********************************
-  INIT
-*********************************/
+/* ========== INIT ========== */
 loadTransactions();

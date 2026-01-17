@@ -1,78 +1,91 @@
-const API_URL = "https://shivvani-m-expense-backend.onrender.com/api/auth";
+const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
 
-
-/* =======================
+/* =========================
    REGISTER
-======================= */
-async function register() {
-  const name = document.getElementById("name")?.value;
-  const email = document.getElementById("email")?.value;
-  const password = document.getElementById("password")?.value;
+========================= */
+async function register(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!name || !email || !password) {
-    alert("Please fill all fields");
+    alert("All fields are required");
     return;
   }
 
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const res = await fetch(`${API}/register`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (!response.ok) {
+    if (!res.ok) {
       alert(data.message || "Registration failed");
       return;
     }
 
-    alert("Registered successfully 🎉");
+    alert("Registration successful ✅");
     window.location.href = "login.html";
-  } catch (error) {
-    console.error("Register error:", error);
-    alert("Server not reachable. Please try again later.");
+  } catch (err) {
+    alert("Server error");
   }
 }
 
-/* =======================
+/* =========================
    LOGIN
-======================= */
-async function login() {
-  const email = document.getElementById("email")?.value;
-  const password = document.getElementById("password")?.value;
+========================= */
+async function login(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    alert("Please fill all fields");
+    alert("Email and password required");
     return;
   }
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const res = await fetch(`${API}/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (!response.ok) {
+    if (!res.ok) {
       alert(data.message || "Login failed");
       return;
     }
 
-    // Save token & user safely
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    /* 🔥 IMPORTANT PART */
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        _id: data.user._id,
+        name: data.user.name,
+        email: data.user.email,
+      })
+    );
 
     window.location.href = "dashboard.html";
-  } catch (error) {
-    console.error("Login error:", error);
-    alert("Server not reachable. Please try again later.");
+  } catch (err) {
+    alert("Server error");
   }
 }
+
+/* =========================
+   AUTO REDIRECT (OPTIONAL)
+========================= */
+(function () {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && window.location.pathname.includes("login")) {
+    window.location.href = "dashboard.html";
+  }
+})();
