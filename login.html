@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Login</title>
-  <link rel="stylesheet" href="css/auth.css">
-
+  <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
 
@@ -21,14 +20,16 @@
       <input type="password" id="password" placeholder="••••••••" />
     </div>
 
+    <!-- 🔴 FIX #1: type="button" -->
     <button type="button" class="btn" onclick="login()">Login</button>
 
     <div class="link">
       Don’t have an account?
-      <a href="register.html">Register</a>
+      <a href="/register.html">Register</a>
     </div>
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- 🔴 FIX #2: absolute path -->
+  <script src="/js/auth.js"></script>
 </body>
 </html>
