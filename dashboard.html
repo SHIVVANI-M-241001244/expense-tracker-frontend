@@ -2,25 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard</title>
+  <title>Expense Tracker</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <div class="dashboard">
+  <!-- HEADER -->
+  <header class="topbar">
+    <h2>Expense Tracker 💜</h2>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
 
-    <!-- HEADER -->
-    <header class="header">
-      <h2>Expense Tracker 💜</h2>
-      <button class="logout" onclick="logout()">Logout</button>
-      <button class="btn" onclick="toggleDarkMode()">🌙</button>
+  <main class="container">
 
-    </header>
-    <p>📅 Report for this month</p>
-
-
-    <!-- SUMMARY CARDS -->
-    <div class="summary">
+    <!-- SUMMARY -->
+    <section class="summary-grid">
       <div class="summary-card income">
         <h4>Total Income</h4>
         <p id="totalIncome">₹0</p>
@@ -35,61 +35,69 @@
         <h4>Balance</h4>
         <p id="balance">₹0</p>
       </div>
-    </div>
-    <div class="card">
-  <h3>Monthly Budget</h3>
-  <input type="number" id="budgetInput" placeholder="Enter budget" />
-  <button class="btn" onclick="saveBudget()">Save Budget</button>
-  <p id="budgetStatus"></p>
-</div>
+    </section>
 
+    <!-- CONTENT GRID -->
+    <section class="content-grid">
 
-    <!-- ADD TRANSACTION -->
-    <div class="card form-card">
-      <h3>Add Income / Expense</h3>
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
 
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
+        <!-- BUDGET -->
+        <div class="card">
+          <h3>Monthly Budget</h3>
+          <input type="number" id="budgetInput" placeholder="Enter budget" />
+          <button class="btn" onclick="saveBudget()">Save Budget</button>
+          <p id="budgetStatus"></p>
+        </div>
 
-      <input type="text" id="category" placeholder="Category (Food, Salary)" />
-      <input type="number" id="amount" placeholder="Amount" />
-      <input type="text" id="note" placeholder="Note (optional)" />
+        <!-- ADD TRANSACTION -->
+        <div class="card">
+          <h3>Add Income / Expense</h3>
 
-      <button class="btn" onclick="addTransaction()">Add</button>
-    </div>
+          <select id="type">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
 
-    <!-- TRANSACTIONS LIST -->
-    <div class="card">
-      <h3>Recent Transactions</h3>
-      <ul id="transactionList"></ul>
-    </div>
+          <input type="text" id="category" placeholder="Category" />
+          <input type="number" id="amount" placeholder="Amount" />
+          <input type="text" id="note" placeholder="Note (optional)" />
 
-    <!-- CHARTS SECTION -->
-    <div class="charts">
-      <div class="card">
-        <h3>Expense Distribution</h3>
-        <canvas id="pieChart"></canvas>
+          <button class="btn" onclick="addTransaction()">Add</button>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div class="card">
+          <h3>Recent Transactions</h3>
+          <ul id="transactionList"></ul>
+        </div>
       </div>
 
-      <div class="card">
-        <h3>Income vs Expense</h3>
-        <canvas id="barChart"></canvas>
+      <!-- RIGHT COLUMN (CHARTS) -->
+      <div class="right-col">
+
+        <div class="card">
+          <h3>Expense Distribution</h3>
+          <canvas id="pieChart"></canvas>
+        </div>
+
+        <div class="card">
+          <h3>Income vs Expense</h3>
+          <canvas id="barChart"></canvas>
+        </div>
+
+        <div class="card">
+          <h3>Balance Trend</h3>
+          <canvas id="lineChart"></canvas>
+        </div>
+
       </div>
 
-      <div class="card">
-        <h3>Balance Trend</h3>
-        <canvas id="lineChart"></canvas>
-      </div>
-    </div>
+    </section>
+  </main>
 
-  </div>
-
-  <!-- IMPORTANT: Script order -->
   <script src="js/dashboard.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/charts.js"></script>
-
+  <script src="js/chart.js"></script>
 </body>
 </html>
