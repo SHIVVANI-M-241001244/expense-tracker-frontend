@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
   const userRaw = JSON.parse(localStorage.getItem("user"));
-
   if (!userRaw) {
     window.location.href = "login.html";
     return;
@@ -14,10 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     id: userRaw._id || userRaw.id,
   };
 
-  /* =========================
-     DARK MODE
-  ========================= */
-  window.toggleDarkMode = function () {
+  document.getElementById("username").innerText = user.name || "User";
+
+  /* DARK MODE */
+  window.toggleDarkMode = () => {
     document.body.classList.toggle("dark");
     localStorage.setItem(
       "darkMode",
@@ -29,81 +28,81 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("dark");
   }
 
-  /* =========================
-     ADD TRANSACTION
-  ========================= */
-  window.addTransaction = async function () {
-    const type = document.getElementById("type").value;
-    const category = document.getElementById("category").value;
-    const amount = document.getElementById("amount").value;
-    const note = document.getElementById("note").value;
+  /* BUDGET */
+  window.saveBudget = () => {
+    const b = document.getElementById("budgetInput").value;
+    if (!b) return alert("Enter budget");
+    localStorage.setItem("budget", b);
+  };
 
-    if (!category || !amount) {
-      alert("Please fill all required fields");
+  function checkBudget(exp) {
+    const b = localStorage.getItem("budget");
+    if (!b) return;
+    document.getElementById("budgetStatus").innerText =
+      exp > b ? "⚠️ Budget exceeded" : "✅ Within budget";
+  }
+
+  /* ADD TRANSACTION */
+  window.addTransaction = async () => {
+    const type = typeEl.value;
+    const category = categoryEl.value;
+    const amount = amountEl.value;
+    const note = noteEl.value;
+
+    if (!amount || (type === "expense" && !category)) {
+      alert("Fill required fields");
       return;
     }
 
-    try {
-      const res = await fetch(`${API_URL}/add`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          type,
-          category,
-          amount: Number(amount),
-          note,
-        }),
-      });
+    await fetch(`${API_URL}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user.id,
+        type,
+        category: type === "income" ? "Income" : category,
+        amount: Number(amount),
+        note,
+      }),
+    });
 
-      if (!res.ok) throw new Error("Save failed");
-
-      document.getElementById("amount").value = "";
-      document.getElementById("note").value = "";
-
-      loadTransactions();
-    } catch (err) {
-      console.error(err);
-      alert("❌ Transaction not saved");
-    }
+    amountEl.value = "";
+    noteEl.value = "";
+    loadTransactions();
+    loadCharts();
   };
 
-  /* =========================
-     LOAD TRANSACTIONS
-  ========================= */
+  /* LOAD TRANSACTIONS */
   async function loadTransactions() {
     const res = await fetch(`${API_URL}/${user.id}`);
-    const transactions = await res.json();
+    const data = await res.json();
 
-    let income = 0;
-    let expense = 0;
-
+    let income = 0,
+      expense = 0;
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    transactions.forEach((t) => {
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+    data.forEach((t) => {
+      t.type === "income"
+        ? (income += t.amount)
+        : (expense += t.amount);
 
       const li = document.createElement("li");
       li.innerHTML = `
         <span>${t.category}</span>
         <span class="${t.type}">
           ${t.type === "income" ? "+" : "-"}₹${t.amount}
-        </span>
-      `;
+        </span>`;
       list.appendChild(li);
     });
 
-    document.getElementById("totalIncome").innerText = `₹${income}`;
-    document.getElementById("totalExpense").innerText = `₹${expense}`;
-    document.getElementById("balance").innerText = `₹${income - expense}`;
+    totalIncome.innerText = `₹${income}`;
+    totalExpense.innerText = `₹${expense}`;
+    balance.innerText = `₹${income - expense}`;
+    checkBudget(expense);
   }
 
-  /* =========================
-     LOGOUT
-  ========================= */
-  window.logout = function () {
+  window.logout = () => {
     localStorage.clear();
     window.location.href = "login.html";
   };

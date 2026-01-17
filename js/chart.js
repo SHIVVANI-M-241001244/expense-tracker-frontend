@@ -1,63 +1,56 @@
 let pieChart, barChart, lineChart;
 
-function loadCharts() {
-  fetch(
-    `https://shivvani-m-expense-backend.onrender.com/api/transactions/${JSON.parse(localStorage.getItem("user")).id}`
-  )
-    .then(res => res.json())
-    .then(data => {
-      const expenseData = {};
-      let income = 0;
-      let expense = 0;
-      let balance = [];
+async function loadCharts() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user._id || user.id;
 
-      data.forEach(t => {
-        if (t.type === "expense") {
-          expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
-          expense += t.amount;
-        } else {
-          income += t.amount;
-        }
-        balance.push(income - expense);
-      });
+  const res = await fetch(
+    `https://shivvani-m-expense-backend.onrender.com/api/transactions/${userId}`
+  );
+  const data = await res.json();
 
-      if (pieChart) pieChart.destroy();
-      pieChart = new Chart(document.getElementById("pieChart"), {
-        type: "pie",
-        data: {
-          labels: Object.keys(expenseData),
-          datasets: [{
-            data: Object.values(expenseData),
-            backgroundColor: ["#ff7675", "#74b9ff", "#55efc4", "#ffeaa7"]
-          }]
-        }
-      });
+  const expenseMap = {};
+  let income = 0,
+    expense = 0,
+    balance = 0;
+  const balanceData = [];
 
-      if (barChart) barChart.destroy();
-      barChart = new Chart(document.getElementById("barChart"), {
-        type: "bar",
-        data: {
-          labels: ["Income", "Expense"],
-          datasets: [{
-            data: [income, expense],
-            backgroundColor: ["#00cec9", "#ff7675"]
-          }]
-        }
-      });
+  data.forEach((t) => {
+    if (t.type === "expense") {
+      expense += t.amount;
+      expenseMap[t.category] =
+        (expenseMap[t.category] || 0) + t.amount;
+    } else {
+      income += t.amount;
+    }
+    balance += t.type === "income" ? t.amount : -t.amount;
+    balanceData.push(balance);
+  });
 
-      if (lineChart) lineChart.destroy();
-      lineChart = new Chart(document.getElementById("lineChart"), {
-        type: "line",
-        data: {
-          labels: balance.map((_, i) => i + 1),
-          datasets: [{
-            data: balance,
-            borderColor: "#6c5ce7",
-            fill: false
-          }]
-        }
-      });
-    });
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(pieChartEl, {
+    type: "pie",
+    data: {
+      labels: Object.keys(expenseMap),
+      datasets: [{ data: Object.values(expenseMap) }],
+    },
+  });
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(barChartEl, {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense"],
+      datasets: [{ data: [income, expense] }],
+    },
+  });
+
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(lineChartEl, {
+    type: "line",
+    data: {
+      labels: balanceData.map((_, i) => i + 1),
+      datasets: [{ data: balanceData }],
+    },
+  });
 }
-
-loadCharts();

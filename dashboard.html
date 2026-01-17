@@ -4,55 +4,44 @@
   <meta charset="UTF-8" />
   <title>Expense Tracker</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="/css/dashboard.css" />
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="dashboard">
 
-  <!-- ================= HEADER ================= -->
+  <!-- HEADER -->
   <header class="topbar">
-    <h2>
-      Hi, <span id="username">User</span> 💜
-    </h2>
-
+    <h2>Hi, <span id="username">User</span> 💜</h2>
     <div class="top-actions">
       <button class="icon-btn" onclick="toggleDarkMode()">🌙</button>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </header>
 
-  <!-- ================= MAIN ================= -->
   <main class="container">
 
-    <!-- ===== SUMMARY CARDS ===== -->
+    <!-- SUMMARY -->
     <section class="summary-grid">
       <div class="summary-card income">
         <h4>Total Income</h4>
         <p id="totalIncome">₹0</p>
       </div>
-
       <div class="summary-card expense">
         <h4>Total Expense</h4>
         <p id="totalExpense">₹0</p>
       </div>
-
       <div class="summary-card balance">
         <h4>Balance</h4>
         <p id="balance">₹0</p>
       </div>
     </section>
 
-    <!-- ===== CONTENT GRID ===== -->
     <section class="content-grid">
 
-      <!-- ========= LEFT COLUMN ========= -->
+      <!-- LEFT -->
       <div class="left-col">
 
-        <!-- Monthly Budget -->
         <div class="card">
           <h3>Monthly Budget</h3>
           <input type="number" id="budgetInput" placeholder="Enter budget" />
@@ -60,17 +49,14 @@
           <p id="budgetStatus"></p>
         </div>
 
-        <!-- Add Transaction -->
         <div class="card">
           <h3>Add Income / Expense</h3>
 
-          <!-- Type -->
           <select id="type">
             <option value="income">Income</option>
             <option value="expense">Expense</option>
           </select>
 
-          <!-- Category (ONLY for expense) -->
           <select id="category">
             <option value="">Select Category</option>
             <option value="Rent">🏠 Rent</option>
@@ -81,63 +67,54 @@
             <option value="Transport">🚕 Transport</option>
             <option value="Education">📚 Education</option>
             <option value="Shopping">🛍️ Shopping</option>
-            <option value="Savings">💰 Savings</option>
             <option value="Other">📌 Other</option>
           </select>
 
-          <!-- Amount -->
           <input type="number" id="amount" placeholder="Amount" />
-
-          <!-- Note -->
           <input type="text" id="note" placeholder="Note (optional)" />
 
           <button class="btn" id="addBtn" onclick="addTransaction()">Add</button>
         </div>
 
-        <!-- Recent Transactions -->
         <div class="card">
           <h3>Recent Transactions</h3>
           <ul id="transactionList"></ul>
         </div>
       </div>
 
-      <!-- ========= RIGHT COLUMN ========= -->
+      <!-- RIGHT -->
       <div class="right-col">
-
         <div class="card">
           <h3>Expense Distribution</h3>
           <canvas id="pieChart"></canvas>
         </div>
-
         <div class="card">
           <h3>Income vs Expense</h3>
           <canvas id="barChart"></canvas>
         </div>
-
         <div class="card">
           <h3>Balance Trend</h3>
           <canvas id="lineChart"></canvas>
         </div>
-
       </div>
+
     </section>
   </main>
 
-  <!-- ================= SCRIPTS ================= -->
   <script src="/js/dashboard.js"></script>
   <script src="/js/chart.js"></script>
 
-  <!-- Show category ONLY when Expense -->
   <script>
-    const typeSelect = document.getElementById("type");
-    const categorySelect = document.getElementById("category");
+    const typeEl = document.getElementById("type");
+    const categoryEl = document.getElementById("category");
 
     function toggleCategory() {
-      categorySelect.style.display =
-        typeSelect.value === "expense" ? "block" : "none";
+      categoryEl.style.display =
+        typeEl.value === "expense" ? "block" : "none";
+      if (typeEl.value === "income") categoryEl.value = "";
     }
 
-    typeSelect.addEventListener("change", toggleCategory);
+    typeEl.addEventListener("change", toggleCategory);
     toggleCategory();
   </script>
 
