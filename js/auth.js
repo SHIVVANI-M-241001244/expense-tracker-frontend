@@ -4,9 +4,9 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
    REGISTER
 ========================= */
 async function register() {
-  const name = document.getElementById("name")?.value.trim();
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!name || !email || !password) {
     alert("All fields are required");
@@ -30,8 +30,7 @@ async function register() {
     alert("Registration successful ✅");
     window.location.href = "/login.html";
   } catch (err) {
-    console.error(err);
-    alert("Server error during registration");
+    alert("Server error");
   }
 }
 
@@ -39,8 +38,8 @@ async function register() {
    LOGIN
 ========================= */
 async function login() {
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
   if (!email || !password) {
     alert("Email and password required");
@@ -61,7 +60,6 @@ async function login() {
       return;
     }
 
-    // ✅ Save logged-in user
     localStorage.setItem(
       "user",
       JSON.stringify({
@@ -73,8 +71,7 @@ async function login() {
 
     window.location.href = "/dashboard.html";
   } catch (err) {
-    console.error(err);
-    alert("Server error during login");
+    alert("Server error");
   }
 }
 
@@ -84,12 +81,11 @@ async function login() {
 (function () {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // If already logged in, prevent staying on login/register
   if (
     user &&
     user._id &&
     (window.location.pathname.includes("login") ||
-      window.location.pathname.includes("register"))
+     window.location.pathname.includes("register"))
   ) {
     window.location.href = "/dashboard.html";
   }
