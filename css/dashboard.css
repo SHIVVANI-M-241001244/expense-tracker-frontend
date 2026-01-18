@@ -111,3 +111,13 @@ canvas {
   width: 100% !important;
   height: 260px !important;
 }
+/* Chart container fix */
+.card canvas {
+  max-height: 260px;
+}
+
+@media (min-width: 768px) {
+  .card canvas {
+    max-height: 300px;
+  }
+}
