@@ -257,4 +257,3 @@ loadTransactions();
 window.addTransaction = addTransaction;
 window.toggleTheme = toggleTheme;
 window.logout = logout;
-
