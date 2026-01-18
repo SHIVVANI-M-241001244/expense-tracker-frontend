@@ -3,66 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <title>Dashboard</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="css/dashboard.css" />
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<header class="topbar">
-  <h2 id="greeting">Hello 💜</h2>
-  <div>
-    <button onclick="toggleDarkMode()">🌙</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-</header>
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <h2 id="greetingText">Hello 💜</h2>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
 
-<main class="container">
+  <main class="container">
 
-<section class="summary">
-  <div>Total Income <span id="totalIncome">₹0</span></div>
-  <div>Total Expense <span id="totalExpense">₹0</span></div>
-  <div>Balance <span id="balance">₹0</span></div>
-</section>
+    <!-- SUMMARY CARDS -->
+    <section class="summary-cards">
+      <div class="card income">
+        <p>Total Income</p>
+        <h3 id="totalIncome">₹0</h3>
+      </div>
 
-<section class="card">
-  <h3>Add Transaction</h3>
+      <div class="card expense">
+        <p>Total Expense</p>
+        <h3 id="totalExpense">₹0</h3>
+      </div>
 
-  <select id="type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+      <div class="card balance">
+        <p>Savings</p>
+        <h3 id="balance">₹0</h3>
+      </div>
+    </section>
 
-  <select id="category">
-    <option value="">Select Category</option>
-    <option value="Rent">Rent</option>
-    <option value="Hospital">Hospital</option>
-    <option value="Groceries">Groceries</option>
-    <option value="Entertainment">Entertainment</option>
-    <option value="Transport">Transport</option>
-  </select>
+    <!-- ADD TRANSACTION -->
+    <section class="card add-card">
+      <h3>Add Transaction</h3>
 
-  <input type="number" id="amount" placeholder="Amount" />
-  <input type="text" id="note" placeholder="Note" />
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
 
-  <button onclick="addTransaction()">Add</button>
-</section>
+      <select id="category">
+        <option value="">Select Category</option>
+        <option value="Rent">Rent</option>
+        <option value="Hospital">Hospital</option>
+        <option value="Groceries">Groceries</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Transport">Transport</option>
+      </select>
 
-<section class="card">
-  <h3>Transactions</h3>
-  <ul id="transactionList"></ul>
-</section>
+      <input type="number" id="amount" placeholder="Amount" />
+      <input type="text" id="note" placeholder="Note" />
 
-<section class="card">
-  <canvas id="pieChart"></canvas>
-</section>
+      <button onclick="addTransaction()">Add Transaction</button>
+    </section>
 
-<section class="card">
-  <canvas id="barChart"></canvas>
-</section>
+    <!-- TRANSACTION LIST -->
+    <section class="card">
+      <h3>Transactions</h3>
+      <ul id="transactionList"></ul>
+    </section>
 
-</main>
+    <!-- CHARTS -->
+    <section class="charts">
+      <div class="card">
+        <canvas id="pieChart"></canvas>
+      </div>
 
-<script src="js/dashboard_v2.js"></script>
-<script src="js/chart.js"></script>
+      <div class="card">
+        <canvas id="barChart"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JS -->
+  <script src="js/dashboard_v2.js"></script>
+  <script src="js/chart.js"></script>
+
 </body>
 </html>
