@@ -261,3 +261,29 @@ loadTransactions();
 window.addTransaction = addTransaction;
 window.toggleTheme = toggleTheme;
 window.logout = logout;
+/* =========================
+   STATIC NIFTY DISPLAY
+   (SAFE UI ONLY)
+========================= */
+(function showNifty() {
+  const isDark = document.body.classList.contains("dark");
+
+  const niftyValue = document.getElementById("niftyValue");
+  const niftyChange = document.getElementById("niftyChange");
+
+  if (!niftyValue || !niftyChange) return;
+
+  // Static sample values (safe)
+  const value = 22450.35;
+  const change = +124.6;
+
+  niftyValue.innerText = value.toLocaleString("en-IN");
+
+  if (change >= 0) {
+    niftyChange.innerText = `+${change} (+0.56%)`;
+    niftyChange.className = "nifty-up";
+  } else {
+    niftyChange.innerText = `${change} (-0.56%)`;
+    niftyChange.className = "nifty-down";
+  }
+})();

@@ -169,3 +169,58 @@ canvas {
     grid-template-columns: 1fr;
   }
 }
+/* ================= NIFTY CARD ================= */
+.nifty-card {
+  background: linear-gradient(135deg, #fdf2f8, #eef2ff);
+}
+
+body.dark .nifty-card {
+  background: linear-gradient(135deg, #2a2a40, #1e1e2e);
+}
+
+.nifty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nifty-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.nifty-tag {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.08);
+}
+
+body.dark .nifty-tag {
+  background: rgba(255,255,255,0.15);
+}
+
+.nifty-value {
+  margin-top: 12px;
+}
+
+.nifty-value h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.nifty-up {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.nifty-down {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.nifty-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+}
