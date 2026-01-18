@@ -59,9 +59,7 @@ async function loadTransactions() {
       else expense += t.amount;
 
       const li = document.createElement("li");
-      li.innerHTML = `
-        <span>${t.category} – ₹${t.amount}</span>
-      `;
+      li.innerHTML = `<span>${t.category} – ₹${t.amount}</span>`;
       list.appendChild(li);
     });
 
@@ -86,7 +84,7 @@ async function addTransaction() {
   const note = document.getElementById("note").value;
 
   if (!amount || isNaN(amount)) {
-    alert("Enter valid amount");
+    alert("Enter a valid amount");
     return;
   }
 
@@ -121,10 +119,14 @@ function renderCharts(transactions, income, expense) {
   const savings = income - expense;
   const isDark = document.body.classList.contains("dark");
 
-  const textColor = isDark ? "#ffffff" : "#333";
-  const gridColor = isDark ? "rgba(255,255,255,0.15)" : "#e5e7eb";
+  const textColor = isDark ? "#f1f1f1" : "#2f2f2f";
+  const gridColor = isDark ? "rgba(255,255,255,0.25)" : "#e5e7eb";
 
-  /* ===== PIE CHART ===== */
+  const incomeColor = "#86EFAC";   // mint
+  const expenseColor = "#FCA5A5";  // soft red
+  const savingsColor = "#A5B4FC";  // lavender
+
+  /* ================= PIE CHART ================= */
   const expenseMap = {};
   transactions
     .filter(t => t.type === "expense")
@@ -133,54 +135,55 @@ function renderCharts(transactions, income, expense) {
         (expenseMap[t.category] || 0) + t.amount;
     });
 
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "pie",
-    data: {
-      labels: Object.keys(expenseMap),
-      datasets: [{
-        data: Object.values(expenseMap),
-        backgroundColor: [
-          "#A5B4FC", // lavender
-          "#FCA5A5", // soft red
-          "#86EFAC", // mint
-          "#FDE68A", // pastel yellow
-          "#93C5FD", // sky blue
-          "#FBCFE8"  // pink
-        ],
-        borderWidth: 2,
-        borderColor: isDark ? "#1e1e2e" : "#ffffff"
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-            font: { size: 13 }
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: ctx => `${ctx.label}: ₹${ctx.raw}`
+  if (Object.keys(expenseMap).length === 0) {
+    document.getElementById("pieChart").parentElement.innerHTML =
+      "<p style='text-align:center;color:var(--muted)'>No expense data</p>";
+  } else {
+    if (pieChart) pieChart.destroy();
+    pieChart = new Chart(document.getElementById("pieChart"), {
+      type: "pie",
+      data: {
+        labels: Object.keys(expenseMap),
+        datasets: [{
+          data: Object.values(expenseMap),
+          backgroundColor: [
+            "#FDE68A",
+            "#93C5FD",
+            "#FCA5A5",
+            "#86EFAC",
+            "#FBCFE8",
+            "#C7D2FE"
+          ],
+          borderWidth: 2,
+          borderColor: isDark ? "#2f2f46" : "#ffffff"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: textColor,
+              font: { size: 13 }
+            }
           }
         }
       }
-    }
-  });
+    });
+  }
 
-  /* ===== BAR CHART ===== */
+  /* ================= BAR CHART ================= */
   if (barChart) barChart.destroy();
   barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
       labels: ["Income", "Expense", "Savings"],
       datasets: [{
-        label: "₹ Amount",
+        label: "Amount (₹)",
         data: [income, expense, savings],
-        backgroundColor: ["#86EFAC", "#FCA5A5", "#A5B4FC"]
+        backgroundColor: [incomeColor, expenseColor, savingsColor],
+        borderRadius: 10
       }]
     },
     options: {
@@ -196,7 +199,7 @@ function renderCharts(transactions, income, expense) {
     }
   });
 
-  /* ===== LINE CHART ===== */
+  /* ================= LINE CHART ================= */
   let running = 0;
   const trend = [];
 
@@ -211,12 +214,13 @@ function renderCharts(transactions, income, expense) {
     data: {
       labels: trend.map((_, i) => `T${i + 1}`),
       datasets: [{
-        label: "Balance",
+        label: "Balance (₹)",
         data: trend,
-        borderColor: "#BFA7F3",
-        backgroundColor: "rgba(191,167,243,0.2)",
-        tension: 0.3,
-        fill: true
+        borderColor: savingsColor,
+        backgroundColor: "rgba(165,180,252,0.35)",
+        fill: true,
+        tension: 0.35,
+        pointBackgroundColor: savingsColor
       }]
     },
     options: {
