@@ -85,7 +85,6 @@ async function deleteTransaction(id) {
   loadTransactions();
 }
 
-/* CHARTS */
 function renderCharts(data, income, expense) {
   const savings = income - expense;
 
@@ -93,32 +92,75 @@ function renderCharts(data, income, expense) {
   barChart?.destroy();
   lineChart?.destroy();
 
+  /* ===== EXPENSE MAP ===== */
   const expenseMap = {};
-  data.filter(t => t.type === "expense")
-    .forEach(t => expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount);
+  data
+    .filter(t => t.type === "expense")
+    .forEach(t => {
+      expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
+    });
 
+  const textColor = document.body.classList.contains("dark")
+    ? "#f8fafc"
+    : "#1f2937";
+
+  /* ===== PIE CHART ===== */
   pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
       labels: Object.keys(expenseMap),
       datasets: [{
         data: Object.values(expenseMap),
-        backgroundColor: ["#fde2e4","#e0f2fe","#ede9fe","#dcfce7"]
+        backgroundColor: ["#fde2e4", "#e0f2fe", "#ede9fe", "#dcfce7"]
       }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: {
+              size: 14,
+              weight: "bold"
+            }
+          }
+        }
+      }
     }
   });
 
+  /* ===== BAR CHART ===== */
   barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: ["Income","Expense","Savings"],
+      labels: ["Income", "Expense", "Savings"],
       datasets: [{
         data: [income, expense, savings],
-        backgroundColor: ["#86efac","#fca5a5","#a5b4fc"]
+        backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"]
       }]
+    },
+    options: {
+      scales: {
+        x: {
+          ticks: {
+            color: textColor,
+            font: { weight: "bold" }
+          }
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            font: { weight: "bold" }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
     }
   });
 
+  /* ===== LINE CHART ===== */
   let running = 0;
   const trend = [];
   data.forEach(t => {
@@ -129,12 +171,38 @@ function renderCharts(data, income, expense) {
   lineChart = new Chart(document.getElementById("lineChart"), {
     type: "line",
     data: {
-      labels: trend.map((_,i)=>`T${i+1}`),
+      labels: trend.map((_, i) => `T${i + 1}`),
       datasets: [{
         data: trend,
         borderColor: "#6366f1",
+        borderWidth: 3,
+        pointRadius: 4,
         fill: false
       }]
+    },
+    options: {
+      scales: {
+        x: {
+          ticks: {
+            color: textColor,
+            font: { weight: "bold" }
+          }
+        },
+        y: {
+          ticks: {
+            color: textColor,
+            font: { weight: "bold" }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { weight: "bold" }
+          }
+        }
+      }
     }
   });
 }
