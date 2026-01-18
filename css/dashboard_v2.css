@@ -137,9 +137,14 @@ body.dark #transactionList li {
 }
 
 /* ================= CHARTS ================= */
-.card canvas {
-  width: 100% !important;
-  height: 280px !important;
+/* Charts size control */
+#pieChart {
+  height: 320px !important;   /* 👈 slightly bigger */
+}
+
+#barChart,
+#lineChart {
+  height: 280px !important;   /* keep others same */
 }
 
 /* ================= RESPONSIVE ================= */
