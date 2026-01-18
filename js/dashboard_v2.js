@@ -11,7 +11,7 @@ if (!user || !user._id) {
 }
 
 /* =========================
-   API URL
+   API
 ========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
@@ -54,12 +54,18 @@ async function loadTransactions() {
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       if (t.type === "income") income += t.amount;
       else expense += t.amount;
 
       const li = document.createElement("li");
-      li.innerHTML = `<span>${t.category} – ₹${t.amount}</span>`;
+      li.className = "transaction-item";
+
+      // ✅ ONLY DISPLAY (NO EDIT / DELETE)
+      li.innerHTML = `
+        <span>${t.category} – ₹${t.amount}</span>
+      `;
+
       list.appendChild(li);
     });
 
@@ -83,8 +89,8 @@ async function addTransaction() {
   const amount = document.getElementById("amount").value;
   const note = document.getElementById("note").value;
 
-  if (!amount) {
-    alert("Enter amount");
+  if (!amount || isNaN(amount)) {
+    alert("Enter valid amount");
     return;
   }
 
@@ -113,21 +119,20 @@ async function addTransaction() {
 }
 
 /* =========================
-   CHARTS (FIXED SIZE)
+   CHARTS
 ========================= */
 function renderCharts(transactions, income, expense) {
   const savings = income - expense;
+  const isDark = document.body.classList.contains("dark");
 
-  /* FIXED HEIGHTS */
-  document.getElementById("pieChart").style.height = "230px";
-  document.getElementById("barChart").style.height = "260px";
-  document.getElementById("lineChart").style.height = "260px";
+  const textColor = isDark ? "#ffffff" : "#333";
+  const gridColor = isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb";
 
   /* ===== PIE ===== */
   const expenseMap = {};
   transactions
-    .filter(t => t.type === "expense")
-    .forEach(t => {
+    .filter((t) => t.type === "expense")
+    .forEach((t) => {
       expenseMap[t.category] =
         (expenseMap[t.category] || 0) + t.amount;
     });
@@ -152,7 +157,7 @@ function renderCharts(transactions, income, expense) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "right" },
+        legend: { labels: { color: textColor } },
       },
     },
   });
@@ -167,12 +172,18 @@ function renderCharts(transactions, income, expense) {
         label: "₹ Amount",
         data: [income, expense, savings],
         backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
-        borderRadius: 6,
       }],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
     },
   });
 
@@ -180,7 +191,7 @@ function renderCharts(transactions, income, expense) {
   let running = 0;
   const trend = [];
 
-  transactions.forEach(t => {
+  transactions.forEach((t) => {
     running += t.type === "income" ? t.amount : -t.amount;
     trend.push(running);
   });
@@ -194,14 +205,19 @@ function renderCharts(transactions, income, expense) {
         label: "Balance",
         data: trend,
         borderColor: "#bfa7f3",
-        backgroundColor: "rgba(191,167,243,0.2)",
-        fill: true,
-        tension: 0.35,
+        tension: 0.3,
       }],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
     },
   });
 }
@@ -211,6 +227,7 @@ function renderCharts(transactions, income, expense) {
 ========================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
+  loadTransactions();
 }
 
 /* =========================
@@ -225,3 +242,8 @@ function logout() {
    INIT
 ========================= */
 loadTransactions();
+
+/* expose only needed */
+window.addTransaction = addTransaction;
+window.toggleTheme = toggleTheme;
+window.logout = logout;
