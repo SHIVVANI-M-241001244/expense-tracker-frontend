@@ -314,3 +314,100 @@ body.dark .nifty-tag {
     grid-template-columns: 1fr;
   }
 }
+/* ===== BUDGET CARD ===== */
+.budget-card input {
+  margin-top: 10px;
+}
+
+.budget-status {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.budget-status.safe {
+  color: #16a34a;
+}
+
+.budget-status.over {
+  color: #dc2626;
+}
+
+/* Dark mode */
+body.dark .budget-status.safe {
+  color: #22c55e;
+}
+
+body.dark .budget-status.over {
+  color: #f87171;
+}
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 260px !important;
+}
+/* ========= FINAL HARD FIX FOR EDIT / DELETE ========= */
+
+/* Ensure transaction row layout */
+#transactionList li {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+/* Prevent text from eating space */
+#transactionList li span {
+  flex: 1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action buttons container */
+.tx-actions {
+  display: flex !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+/* FORCE buttons visible */
+.tx-actions button {
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+
+  font-size: 16px !important;
+  line-height: 1 !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Light mode */
+.edit-btn {
+  background: #e0e7ff !important;
+  color: #3730a3 !important;
+}
+
+.delete-btn {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+/* Dark mode */
+body.dark .edit-btn {
+  background: #312e81 !important;
+  color: #e0e7ff !important;
+}
+
+body.dark .delete-btn {
+  background: #7f1d1d !important;
+  color: #fee2e2 !important;
+}
+
