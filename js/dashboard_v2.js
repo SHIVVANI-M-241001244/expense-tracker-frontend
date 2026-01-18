@@ -55,25 +55,23 @@ async function loadTransactions() {
     list.innerHTML = "";
 
     transactions.forEach((t) => {
-  if (t.type === "income") income += t.amount;
-  else expense += t.amount;
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
 
-  // Use the MongoDB _id specifically
-  const txId = t._id; 
+      const li = document.createElement("li");
+      li.className = "transaction-item";
 
-  const li = document.createElement("li");
-  li.className = "transaction-item"; // Good for styling later
-  li.innerHTML = `
-    <span>${t.category} – ₹${t.amount}</span>
-    <div>
-      <button onclick="editTransaction('${txId}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
-      <button onclick="deleteTransaction('${txId}')">🗑️</button>
-    </div>
-  `;
-  list.appendChild(li);
-});
+      li.innerHTML = `
+        <span>${t.category} – ₹${t.amount}</span>
+        <div>
+          <button onclick="editTransaction('${t._id}', ${t.amount})">✏️</button>
+          <button onclick="deleteTransaction('${t._id}')">🗑️</button>
+        </div>
+      `;
 
-   
+      list.appendChild(li);
+    });
+
     document.getElementById("totalIncome").innerText = `₹${income}`;
     document.getElementById("totalExpense").innerText = `₹${expense}`;
     document.getElementById("balance").innerText = `₹${income - expense}`;
@@ -94,8 +92,8 @@ async function addTransaction() {
   const amount = document.getElementById("amount").value;
   const note = document.getElementById("note").value;
 
-  if (!amount) {
-    alert("Enter amount");
+  if (!amount || isNaN(amount)) {
+    alert("Enter valid amount");
     return;
   }
 
@@ -126,26 +124,25 @@ async function addTransaction() {
 /* =========================
    EDIT TRANSACTION
 ========================= */
-async function editTransaction(id, category, amount, type) {
+async function editTransaction(id, amount) {
   const newAmount = prompt("Edit amount:", amount);
-  if (!newAmount || isNaN(newAmount)) return;
+
+  if (newAmount === null) return;
+  if (isNaN(newAmount) || newAmount === "") {
+    alert("Invalid amount");
+    return;
+  }
 
   try {
-    const res = await fetch(`${API}/${id}`, {
+    const res = await fetch(`${API}/edit/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         amount: Number(newAmount),
-        category,
-        type,
-        userId: user._id,
       }),
     });
 
-    if (!res.ok) {
-      alert("Edit failed");
-      return;
-    }
+    if (!res.ok) throw new Error("Edit failed");
 
     loadTransactions();
   } catch (err) {
@@ -161,14 +158,11 @@ async function deleteTransaction(id) {
   if (!confirm("Delete this transaction?")) return;
 
   try {
-    const res = await fetch(`${API}/${id}`, {
+    const res = await fetch(`${API}/delete/${id}`, {
       method: "DELETE",
     });
 
-    if (!res.ok) {
-      alert("Delete failed");
-      return;
-    }
+    if (!res.ok) throw new Error("Delete failed");
 
     loadTransactions();
   } catch (err) {
@@ -307,7 +301,7 @@ function logout() {
    INIT
 ========================= */
 loadTransactions();
-// This explicitly attaches your functions to the window object
+
 window.addTransaction = addTransaction;
 window.editTransaction = editTransaction;
 window.deleteTransaction = deleteTransaction;
