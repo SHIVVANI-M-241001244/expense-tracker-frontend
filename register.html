@@ -2,24 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Register</title>
+  <title>Create Account</title>
+
   <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
 
-  <div class="card">
-    <h2>Create Account ✨</h2>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <h2>Create Account ✨</h2>
+      <p class="subtitle">Start tracking your expenses beautifully</p>
 
-    <input type="text" id="name" placeholder="Name" />
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+      <input type="text" id="name" placeholder="Name" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
 
-    <button type="button" onclick="register()">Register</button>
+      <button onclick="register()">Register</button>
 
-    <p>
-      Already have an account?
-      <a href="login.html">Login</a>
-    </p>
+      <p class="switch">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+    </div>
   </div>
 
   <script src="js/auth.js"></script>
