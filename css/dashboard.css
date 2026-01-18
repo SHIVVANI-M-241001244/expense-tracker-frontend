@@ -1,10 +1,18 @@
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #f7f3ff, #e9f0ff);
 }
 
-/* Top bar */
+body {
+  background: linear-gradient(135deg, #f6f7ff, #fbeaff);
+  min-height: 100vh;
+}
+
+/* =========================
+   TOP BAR
+========================= */
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -18,49 +26,143 @@ body {
 }
 
 .logout-btn {
-  background: #f6c1cc;
+  background: #ffb3c6;
   border: none;
-  padding: 10px 18px;
-  border-radius: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
+  font-weight: 500;
 }
 
-/* Summary cards */
+/* =========================
+   MAIN CONTAINER
+========================= */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* =========================
+   SUMMARY CARDS
+========================= */
 .summary-cards {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  padding: 20px 40px;
+  margin-bottom: 30px;
 }
 
-.card {
-  flex: 1;
+.summary-cards .card {
   padding: 20px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  text-align: center;
 }
 
-.card p {
-  margin: 0;
+.summary-cards p {
   font-size: 14px;
-  opacity: 0.7;
+  color: #555;
 }
 
-.card h3 {
-  margin-top: 10px;
+.summary-cards h3 {
   font-size: 24px;
+  margin-top: 8px;
 }
 
 .income {
-  background: #e6f7ee;
-  color: #2f7a5a;
+  background: #e6fff5;
+  color: #1b7f5c;
 }
 
 .expense {
-  background: #fdecec;
-  color: #b23a48;
+  background: #ffecec;
+  color: #b3261e;
 }
 
 .balance {
-  background: #efe8ff;
-  color: #5a3ea1;
+  background: #eef1ff;
+  color: #3f51b5;
+}
+
+/* =========================
+   CARDS
+========================= */
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 24px;
+  margin-bottom: 25px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+  margin-bottom: 15px;
+  color: #4b3f72;
+}
+
+/* =========================
+   ADD TRANSACTION
+========================= */
+.add-card select,
+.add-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+.add-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  border: none;
+  background: #cdb4db;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* =========================
+   TRANSACTION LIST
+========================= */
+#transactionList {
+  list-style: none;
+}
+
+#transactionList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+#transactionList button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* =========================
+   CHARTS
+========================= */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
 }
