@@ -1,18 +1,21 @@
 console.log("DASHBOARD LOADED");
 
-/* AUTH */
+/* ================= AUTH ================= */
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user || !user._id) {
-  alert("Login again");
+  alert("Please login again");
   location.href = "login.html";
 }
 
-/* API */
+/* ================= API ================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 let pieChart, barChart, lineChart;
 
-/* GREETING */
+/* ================= GREETING ================= */
+const greetingText = document.getElementById("greetingText");
+const greetingMsg = document.getElementById("greetingMsg");
+
 const hour = new Date().getHours();
 greetingText.innerText =
   hour < 12 ? `Good Morning, ${user.name}` :
@@ -21,7 +24,7 @@ greetingText.innerText =
 
 greetingMsg.innerText = "Track smart, spend wiser 🌱";
 
-/* LOAD */
+/* ================= LOAD TRANSACTIONS ================= */
 async function loadTransactions() {
   const res = await fetch(`${API}/${user._id}`);
   const data = await res.json();
@@ -51,7 +54,7 @@ async function loadTransactions() {
   updateBudgetStatus();
 }
 
-/* ADD */
+/* ================= ADD ================= */
 async function addTransaction() {
   await fetch(`${API}/add`, {
     method: "POST",
@@ -64,30 +67,33 @@ async function addTransaction() {
       note: note.value
     })
   });
+
   amount.value = note.value = "";
   loadTransactions();
 }
 
-/* EDIT */
+/* ================= EDIT ================= */
 async function editTransaction(id, oldAmount) {
-  const val = prompt("New amount", oldAmount);
+  const val = prompt("Enter new amount", oldAmount);
   if (!val) return;
+
   await fetch(`${API}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount: Number(val) })
   });
+
   loadTransactions();
 }
 
-/* DELETE */
+/* ================= DELETE ================= */
 async function deleteTransaction(id) {
-  if (!confirm("Delete?")) return;
+  if (!confirm("Delete this transaction?")) return;
   await fetch(`${API}/${id}`, { method: "DELETE" });
   loadTransactions();
 }
 
-/* CHARTS */
+/* ================= CHARTS ================= */
 function renderCharts(data, income, expense) {
   const savings = income - expense;
 
@@ -95,29 +101,62 @@ function renderCharts(data, income, expense) {
   barChart?.destroy();
   lineChart?.destroy();
 
+  /* PIE DATA */
   const expMap = {};
   data.filter(t => t.type === "expense")
-    .forEach(t => expMap[t.category] = (expMap[t.category] || 0) + t.amount);
+      .forEach(t => expMap[t.category] = (expMap[t.category] || 0) + t.amount);
 
-  pieChart = new Chart(pieChart, {
+  /* PIE */
+  pieChart = new Chart(pieChart.getContext("2d"), {
     type: "pie",
-    data: { labels: Object.keys(expMap), datasets: [{ data: Object.values(expMap) }] }
+    data: {
+      labels: Object.keys(expMap),
+      datasets: [{
+        data: Object.values(expMap),
+        backgroundColor: ["#FFE5EC","#E0FBFC","#EAE4FF","#FFF1C1","#DCFCE7","#FDE2E4"]
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
   });
 
-  barChart = new Chart(barChart, {
+  /* BAR */
+  barChart = new Chart(barChart.getContext("2d"), {
     type: "bar",
-    data: { labels: ["Income","Expense","Savings"], datasets: [{ data: [income,expense,savings] }] }
+    data: {
+      labels: ["Income","Expense","Savings"],
+      datasets: [{
+        data: [income, expense, savings],
+        backgroundColor: ["#22c55e","#ef4444","#6366f1"],
+        borderRadius: 10
+      }]
+    },
+    options: { plugins:{legend:{display:false}}, responsive:true }
   });
 
-  let run = 0;
-  const trend = data.map(t => run += (t.type === "income" ? t.amount : -t.amount));
-  lineChart = new Chart(lineChart, {
+  /* LINE */
+  let running = 0;
+  const trend = [];
+  data.forEach(t => {
+    running += t.type === "income" ? t.amount : -t.amount;
+    trend.push(running);
+  });
+
+  lineChart = new Chart(lineChart.getContext("2d"), {
     type: "line",
-    data: { labels: trend.map((_,i)=>i+1), datasets: [{ data: trend }] }
+    data: {
+      labels: trend.map((_,i)=>`T${i+1}`),
+      datasets: [{
+        data: trend,
+        borderColor:"#6366f1",
+        fill:true,
+        tension:0.35
+      }]
+    },
+    options: { responsive:true }
   });
 }
 
-/* BUDGET */
+/* ================= BUDGET ================= */
 function saveBudget() {
   localStorage.setItem("budget", budgetInput.value);
   updateBudgetStatus();
@@ -138,16 +177,15 @@ function updateBudgetStatus() {
   budgetStatus.className = remaining < 0 ? "budget-status over" : "budget-status safe";
 }
 
-/* THEME */
+/* ================= THEME ================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
 }
 
-/* LOGOUT */
+/* ================= LOGOUT ================= */
 function logout() {
   localStorage.clear();
   location.href = "login.html";
 }
 
 loadTransactions();
-
