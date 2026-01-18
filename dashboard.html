@@ -13,14 +13,12 @@
 <header class="top-bar">
   <div class="greeting-box">
     <h2 id="greetingText"></h2>
-    <p id="greetingMsg">
-      Stay consistent today — small savings build big freedom 🌱
-    </p>
+    <p id="greetingMsg"></p>
   </div>
 
   <div class="top-actions">
-    <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <button onclick="toggleTheme()">🌙</button>
+    <button onclick="logout()">Logout</button>
   </div>
 </header>
 
@@ -44,21 +42,12 @@
     </div>
   </section>
 
-  <!-- NIFTY CARD -->
-  <section class="card nifty-card">
-    <div class="nifty-header">
-      <span class="nifty-title">NIFTY 50</span>
-      <span class="nifty-tag">Market</span>
-    </div>
-
-    <div class="nifty-value">
-      <h2 id="niftyValue">22,450.35</h2>
-      <span id="niftyChange" class="nifty-up">+124.60 (+0.56%)</span>
-    </div>
-
-    <p class="nifty-msg">
-      Market snapshot for inspiration, not trading 📊
-    </p>
+  <!-- BUDGET -->
+  <section class="card">
+    <h3>Monthly Budget</h3>
+    <input type="number" id="budgetInput" placeholder="Set your budget ₹" />
+    <button onclick="saveBudget()">Save Budget</button>
+    <p id="budgetStatus" class="budget-status"></p>
   </section>
 
   <!-- ADD TRANSACTION -->
@@ -73,17 +62,16 @@
     <select id="category">
       <option value="">Select Category</option>
       <option value="Rent">Rent</option>
-      <option value="Groceries">Groceries</option>
-      <option value="Transport">Transport</option>
-      <option value="Entertainment">Entertainment</option>
-      <option value="Hospital">Hospital</option>
+      <option value="Food">Food</option>
+      <option value="Travel">Travel</option>
+      <option value="Shopping">Shopping</option>
       <option value="Other">Other</option>
     </select>
 
     <input type="number" id="amount" placeholder="Amount" />
     <input type="text" id="note" placeholder="Note (optional)" />
 
-    <button onclick="addTransaction()">Add Transaction</button>
+    <button onclick="addTransaction()">Add</button>
   </section>
 
   <!-- TRANSACTIONS -->
@@ -110,6 +98,6 @@
 
 </main>
 
-<script src="js/dashboard_v2.js?v=2"></script>
+<script src="js/dashboard_v2.js"></script>
 </body>
 </html>

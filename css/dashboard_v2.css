@@ -95,9 +95,37 @@ body {
   color: var(--text);
 }
 
-.summary-card.income { border-left: 4px solid var(--income); }
-.summary-card.expense { border-left: 4px solid var(--expense); }
-.summary-card.balance { border-left: 4px solid var(--savings); }
+/* ===== COLOURFUL SUMMARY CARDS ===== */
+.summary-card.income {
+  background: linear-gradient(135deg, #dcfce7, #86efac);
+  color: #065f46;
+}
+
+.summary-card.expense {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+  color: #7f1d1d;
+}
+
+.summary-card.balance {
+  background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
+  color: #1e3a8a;
+}
+
+/* Dark mode */
+body.dark .summary-card.income {
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  color: #ecfdf5;
+}
+
+body.dark .summary-card.expense {
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+  color: #fff1f2;
+}
+
+body.dark .summary-card.balance {
+  background: linear-gradient(135deg, #1e3a8a, #6366f1);
+  color: #eef2ff;
+}
 
 /* ================= CARD ================= */
 .card {
