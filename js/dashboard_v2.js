@@ -7,6 +7,7 @@ const user = JSON.parse(localStorage.getItem("user"));
 
 if (!user || !user._id) {
   alert("Invalid user. Please login again.");
+  localStorage.clear();
   window.location.href = "login.html";
 }
 
@@ -19,7 +20,7 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
    GREETING
 ========================= */
 const greetingText = document.getElementById("greetingText");
-if (greetingText) {
+if (greetingText && user?.name) {
   const hour = new Date().getHours();
   const greet =
     hour < 12 ? "Good Morning" :
@@ -35,7 +36,10 @@ if (greetingText) {
 async function loadTransactions() {
   try {
     const res = await fetch(`${API}/${user._id}`);
-    const transactions = await res.json();
+    const data = await res.json();
+
+    // ✅ SAFETY CHECK
+    const transactions = Array.isArray(data) ? data : [];
 
     let income = 0;
     let expense = 0;
@@ -81,23 +85,27 @@ async function addTransaction() {
     return;
   }
 
-  await fetch(`${API}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: user._id,
-      type,
-      category: type === "income" ? "Income" : category,
-      amount: Number(amount),
-      note,
-    }),
-  });
+  try {
+    await fetch(`${API}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        type,
+        category: type === "income" ? "Income" : category,
+        amount: Number(amount),
+        note,
+      }),
+    });
 
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  document.getElementById("category").value = "";
+    document.getElementById("amount").value = "";
+    document.getElementById("note").value = "";
+    document.getElementById("category").value = "";
 
-  loadTransactions();
+    loadTransactions();
+  } catch (err) {
+    alert("Failed to add transaction");
+  }
 }
 
 /* =========================
@@ -110,17 +118,21 @@ async function editTransaction(id, oldCategory, oldAmount, type) {
 
   if (!newAmount || (type === "expense" && !newCategory)) return;
 
-  await fetch(`${API}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      category: newCategory,
-      amount: Number(newAmount),
-      type,
-    }),
-  });
+  try {
+    await fetch(`${API}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category: newCategory,
+        amount: Number(newAmount),
+        type,
+      }),
+    });
 
-  loadTransactions();
+    loadTransactions();
+  } catch (err) {
+    alert("Update failed");
+  }
 }
 
 /* =========================
@@ -129,8 +141,15 @@ async function editTransaction(id, oldCategory, oldAmount, type) {
 async function deleteTransaction(id) {
   if (!confirm("Delete this transaction?")) return;
 
-  await fetch(`${API}/${id}`, { method: "DELETE" });
-  loadTransactions();
+  try {
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+    });
+
+    loadTransactions();
+  } catch (err) {
+    alert("Delete failed");
+  }
 }
 
 /* =========================

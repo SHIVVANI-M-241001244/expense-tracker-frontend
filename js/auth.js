@@ -44,7 +44,7 @@ async function login() {
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
-    alert("Email & password required");
+    alert("Email and password required");
     return;
   }
 
@@ -56,18 +56,22 @@ async function login() {
     });
 
     const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
 
     if (!res.ok) {
       alert(data.message || "Login failed");
       return;
     }
 
-    // 🔥 SAVE USER CORRECTLY
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("token", data.token);
+    /* ✅ NORMALIZE USER (THIS FIXES EVERYTHING) */
+    const user = {
+      _id: data.user.id,   // 🔥 FIX IS HERE
+      name: data.user.name,
+      email: data.user.email,
+    };
 
-    console.log("USER SAVED:", localStorage.getItem("user"));
+    localStorage.setItem("user", JSON.stringify(user));
+
+    console.log("User saved:", user);
 
     window.location.href = "dashboard.html";
   } catch (err) {
@@ -75,3 +79,13 @@ async function login() {
     alert("Server error");
   }
 }
+
+/* =========================
+   AUTO REDIRECT (OPTIONAL)
+========================= */
+(function () {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && window.location.pathname.includes("login")) {
+    window.location.href = "dashboard.html";
+  }
+})();
