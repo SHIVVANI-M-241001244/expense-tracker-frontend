@@ -4,92 +4,77 @@
   <meta charset="UTF-8" />
   <title>Dashboard</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="css/dashboard.css" />
-
-  <!-- Google Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Chart JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-  <!-- TOP BAR -->
-  <header class="top-bar">
-    <h2 id="greetingText">Hello 💜</h2>
+<!-- TOP BAR -->
+<header class="top-bar">
+  <div>
+    <h2 id="greetingText"></h2>
+    <p id="greetingMsg"></p>
+  </div>
+
+  <div class="top-actions">
+    <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
     <button class="logout-btn" onclick="logout()">Logout</button>
-  </header>
+  </div>
+</header>
 
-  <main class="container">
+<main class="container">
 
-    <!-- SUMMARY CARDS -->
-    <section class="summary-cards">
-      <div class="card income">
-        <p>Total Income</p>
-        <h3 id="totalIncome">₹0</h3>
-      </div>
+  <!-- SUMMARY -->
+  <section class="summary">
+    <div class="summary-card income">
+      <p>Total Income</p>
+      <h3 id="totalIncome">₹0</h3>
+    </div>
 
-      <div class="card expense">
-        <p>Total Expense</p>
-        <h3 id="totalExpense">₹0</h3>
-      </div>
+    <div class="summary-card expense">
+      <p>Total Expense</p>
+      <h3 id="totalExpense">₹0</h3>
+    </div>
 
-      <div class="card balance">
-        <p>Savings</p>
-        <h3 id="balance">₹0</h3>
-      </div>
-    </section>
+    <div class="summary-card balance">
+      <p>Savings</p>
+      <h3 id="balance">₹0</h3>
+    </div>
+  </section>
 
-    <!-- ADD TRANSACTION -->
-    <section class="card add-card">
-      <h3>Add Transaction</h3>
+  <!-- ADD TRANSACTION -->
+  <section class="card">
+    <h3>Add Transaction</h3>
 
-      <select id="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-      </select>
+    <select id="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-      <select id="category">
-        <option value="">Select Category</option>
-        <option value="Rent">Rent</option>
-        <option value="Hospital">Hospital</option>
-        <option value="Groceries">Groceries</option>
-        <option value="Entertainment">Entertainment</option>
-        <option value="Transport">Transport</option>
-      </select>
+    <select id="category">
+      <option value="">Select Category</option>
+      <option value="Rent">Rent</option>
+      <option value="Groceries">Groceries</option>
+      <option value="Transport">Transport</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Hospital">Hospital</option>
+    </select>
 
-      <input type="number" id="amount" placeholder="Amount" />
-      <input type="text" id="note" placeholder="Note" />
+    <input type="number" id="amount" placeholder="Amount" />
+    <input type="text" id="note" placeholder="Note (optional)" />
 
-      <button onclick="addTransaction()">Add Transaction</button>
-    </section>
+    <button onclick="addTransaction()">Add Transaction</button>
+  </section>
 
-    <!-- TRANSACTION LIST -->
-    <section class="card">
-      <h3>Transactions</h3>
-      <ul id="transactionList"></ul>
-    </section>
+  <!-- TRANSACTIONS -->
+  <section class="card">
+    <h3>Transactions</h3>
+    <ul id="transactionList"></ul>
+  </section>
 
-    <!-- CHARTS -->
-    <section class="charts">
-      <div class="card">
-        <canvas id="pieChart"></canvas>
-      </div>
+</main>
 
-      <div class="card">
-        <canvas id="barChart"></canvas>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- JS -->
-  <script src="js/dashboard_v2.js"></script>
-  <script src="js/chart.js"></script>
-
+<script src="js/dashboard_v2.js"></script>
 </body>
 </html>
