@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Expense Dashboard</title>
 
-  <link rel="stylesheet" href="css/dashboard_v2.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -24,7 +24,7 @@
 
 <main class="container">
 
-  <!-- SUMMARY -->
+  <!-- ================= SUMMARY ================= -->
   <section class="summary">
     <div class="summary-card income">
       <p>Total Income</p>
@@ -42,15 +42,38 @@
     </div>
   </section>
 
-  <!-- BUDGET -->
-  <section class="card budget-card">
+  <!-- ================= NIFTY ================= -->
+  <section class="card nifty-card">
+    <div class="nifty-header">
+      <span class="nifty-title">NIFTY 50</span>
+      <span class="nifty-tag">Market</span>
+    </div>
+
+    <div class="nifty-value">
+      <h2 id="niftyValue">22,450.35</h2>
+      <span id="niftyChange" class="nifty-up">
+        +124.60 (+0.56%)
+      </span>
+    </div>
+
+    <p class="nifty-msg">
+      Market snapshot for motivation, not trading 📊
+    </p>
+  </section>
+
+  <!-- ================= BUDGET ================= -->
+  <section class="card">
     <h3>Monthly Budget</h3>
-    <input type="number" id="budgetInput" placeholder="Set your budget ₹" />
+    <input
+      type="number"
+      id="budgetInput"
+      placeholder="Set your budget ₹"
+    />
     <button onclick="saveBudget()">Save Budget</button>
     <p id="budgetStatus" class="budget-status"></p>
   </section>
 
-  <!-- ADD TRANSACTION -->
+  <!-- ================= ADD TRANSACTION ================= -->
   <section class="card">
     <h3>Add Transaction</h3>
 
@@ -59,28 +82,19 @@
       <option value="expense">Expense</option>
     </select>
 
-    <select id="category">
-      <option value="">Select Category</option>
-      <option value="Rent">Rent</option>
-      <option value="Food">Food</option>
-      <option value="Travel">Travel</option>
-      <option value="Shopping">Shopping</option>
-      <option value="Other">Other</option>
-    </select>
-
-    <input type="number" id="amount" placeholder="Amount" />
-    <input type="text" id="note" placeholder="Note (optional)" />
+    <input id="category" placeholder="Category" />
+    <input id="amount" type="number" placeholder="Amount" />
 
     <button onclick="addTransaction()">Add Transaction</button>
   </section>
 
-  <!-- TRANSACTIONS -->
+  <!-- ================= TRANSACTIONS ================= -->
   <section class="card">
     <h3>Transactions</h3>
     <ul id="transactionList"></ul>
   </section>
 
-  <!-- CHARTS -->
+  <!-- ================= CHARTS ================= -->
   <section class="card">
     <h3>Expense Distribution</h3>
     <canvas id="pieChart"></canvas>
@@ -98,6 +112,6 @@
 
 </main>
 
-<script src="js/dashboard_v2.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>
