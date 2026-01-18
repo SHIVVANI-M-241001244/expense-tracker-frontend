@@ -49,6 +49,9 @@ if (greetingText && greetingMsg) {
    LOAD TRANSACTIONS
 ========================= */
 async function loadTransactions() {
+  console.log("INSIDE loadTransactions()");
+  console.log("FETCHING URL 👉", `${API}/${user._id}`);
+ 
   try {
     const res = await fetch(`${API}/${user._id}`);
     const transactions = await res.json();
@@ -261,7 +264,9 @@ function logout() {
 /* =========================
    INIT
 ========================= */
+console.log("BEFORE loadTransactions()");
 loadTransactions();
+console.log("AFTER loadTransactions()");
 
 window.addTransaction = addTransaction;
 window.toggleTheme = toggleTheme;
