@@ -11,61 +11,58 @@ if (!user || !user._id) {
 }
 
 /* =========================
-   API URL
+   API
 ========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 /* =========================
    GREETING
 ========================= */
-const greetingEl = document.getElementById("greeting");
-if (greetingEl) {
-  greetingEl.innerText = `Hi ${user.name} 💜`;
+const greet = document.getElementById("greetingText");
+if (greet) {
+  const hour = new Date().getHours();
+  const wish =
+    hour < 12 ? "Good Morning" :
+    hour < 17 ? "Good Afternoon" :
+    "Good Evening";
+
+  greet.innerText = `${wish}, ${user.name} 💜`;
 }
 
 /* =========================
-   FETCH TRANSACTIONS
+   LOAD TRANSACTIONS
 ========================= */
-async function fetchTransactions() {
+async function loadTransactions() {
   try {
-    const res = await fetch(`${API}/user/${user._id}`);
+    const res = await fetch(`${API}/${user._id}`);
     const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to fetch");
-    }
+    let income = 0;
+    let expense = 0;
 
-    renderTransactions(data);
+    const list = document.getElementById("transactionList");
+    list.innerHTML = "";
+
+    data.forEach(t => {
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${t.category} - ₹${t.amount}
+        <button onclick="deleteTransaction('${t._id}')">🗑</button>
+      `;
+      list.appendChild(li);
+    });
+
+    document.getElementById("totalIncome").innerText = `₹${income}`;
+    document.getElementById("totalExpense").innerText = `₹${expense}`;
+    document.getElementById("balance").innerText = `₹${income - expense}`;
+
   } catch (err) {
     console.error(err);
-    alert("Failed to fetch transactions");
+    alert("Failed to load transactions");
   }
-}
-
-/* =========================
-   RENDER TRANSACTIONS
-========================= */
-function renderTransactions(transactions) {
-  const list = document.getElementById("transactionList");
-  list.innerHTML = "";
-
-  if (transactions.length === 0) {
-    list.innerHTML = "<p>No transactions yet</p>";
-    return;
-  }
-
-  transactions.forEach((t) => {
-    const div = document.createElement("div");
-    div.className = "transaction";
-
-    div.innerHTML = `
-      <span>${t.category || "Income"} - ₹${t.amount}</span>
-      <span>${t.type}</span>
-      <button onclick="deleteTransaction('${t._id}')">🗑</button>
-    `;
-
-    list.appendChild(div);
-  });
 }
 
 /* =========================
@@ -75,73 +72,40 @@ async function addTransaction() {
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
   const amount = document.getElementById("amount").value;
-  const note = document.getElementById("note").value;
 
   if (!amount || (type === "expense" && !category)) {
-    alert("Fill all required fields");
+    alert("Fill all fields");
     return;
   }
 
-  try {
-    const res = await fetch(`${API}/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: user._id,
-        type,
-        category,
-        amount,
-        note,
-      }),
-    });
+  await fetch(`${API}/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: user._id,
+      type,
+      category: type === "income" ? "Income" : category,
+      amount: Number(amount),
+    }),
+  });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Add failed");
-    }
-
-    document.getElementById("amount").value = "";
-    document.getElementById("note").value = "";
-
-    fetchTransactions();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to add transaction");
-  }
+  loadTransactions();
 }
 
 /* =========================
-   DELETE TRANSACTION
+   DELETE
 ========================= */
 async function deleteTransaction(id) {
-  if (!confirm("Delete this transaction?")) return;
-
-  try {
-    const res = await fetch(`${API}/${id}`, {
-      method: "DELETE",
-    });
-
-    if (!res.ok) {
-      throw new Error("Delete failed");
-    }
-
-    fetchTransactions();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to delete transaction");
-  }
+  await fetch(`${API}/${id}`, { method: "DELETE" });
+  loadTransactions();
 }
 
 /* =========================
    LOGOUT
 ========================= */
 function logout() {
-  localStorage.removeItem("user");
+  localStorage.clear();
   window.location.href = "login.html";
 }
 
-/* =========================
-   INIT
-========================= */
-fetchTransactions();
+loadTransactions();
