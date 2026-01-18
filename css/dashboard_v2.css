@@ -383,4 +383,25 @@ body.dark .summary-card.balance {
   max-width: 320px;
   max-height: 320px;
   margin: 0 auto;
+
+}
+/* ===== HARD RESET CARD HEIGHT ISSUE ===== */
+.card,
+.summary-card,
+.nifty-card {
+  height: auto !important;
+  min-height: unset !important;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
 }
