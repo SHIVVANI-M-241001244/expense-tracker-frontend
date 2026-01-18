@@ -1,14 +1,26 @@
 console.log("DASHBOARD JS LOADED");
 
+/* =========================
+   AUTH CHECK
+========================= */
 const user = JSON.parse(localStorage.getItem("user"));
+
 if (!user || !user._id) {
   alert("Invalid user. Please login again.");
   window.location.href = "login.html";
 }
 
+/* =========================
+   API
+========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
-let pieChart, barChart, lineChart;
+/* =========================
+   GLOBAL CHARTS
+========================= */
+let pieChart = null;
+let barChart = null;
+let lineChart = null;
 
 /* =========================
    GREETING
@@ -24,7 +36,8 @@ if (greetingText) {
     "Good Evening";
 
   greetingText.innerText = `${greet}, ${user.name} 💜`;
-  greetingMsg.innerText = "Track your expenses, grow your savings, and stay in control ✨";
+  greetingMsg.innerText =
+    "Track your money mindfully and watch your savings grow ✨";
 }
 
 /* =========================
@@ -41,16 +54,20 @@ async function loadTransactions() {
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
+      console.log("TRANSACTION OBJECT 👉", t);
+
       if (t.type === "income") income += t.amount;
       else expense += t.amount;
 
+      const txId = t._id || t.id; // ✅ CRITICAL FIX
+
       const li = document.createElement("li");
       li.innerHTML = `
-        <span>${t.category} - ₹${t.amount}</span>
+        <span>${t.category} – ₹${t.amount}</span>
         <div>
-          <button onclick="editTransaction('${t._id}','${t.category}',${t.amount},'${t.type}')">✏️</button>
-          <button onclick="deleteTransaction('${t._id}')">🗑️</button>
+          <button onclick="editTransaction('${txId}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+          <button onclick="deleteTransaction('${txId}')">🗑️</button>
         </div>
       `;
       list.appendChild(li);
@@ -68,123 +85,7 @@ async function loadTransactions() {
 }
 
 /* =========================
-   CHARTS (DARK MODE FIXED)
-========================= */
-function renderCharts(transactions, income, expense) {
-  const savings = income - expense;
-  const isDark = document.body.classList.contains("dark");
-
-  const textColor = isDark ? "#ffffff" : "#333";
-  const gridColor = isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb";
-
-  /* -------- PIE CHART -------- */
-  const expenseMap = {};
-  transactions.filter(t => t.type === "expense").forEach(t => {
-    expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
-  });
-
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "pie",
-    data: {
-      labels: Object.keys(expenseMap),
-      datasets: [{
-        data: Object.values(expenseMap),
-        backgroundColor: ["#ffd6a5","#fdffb6","#caffbf","#9bf6ff","#bdb2ff"]
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor
-          }
-        }
-      }
-    }
-  });
-
-  /* -------- BAR CHART -------- */
-  if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById("barChart"), {
-    type: "bar",
-    data: {
-      labels: ["Income", "Expense", "Savings"],
-      datasets: [{
-        label: "₹ Amount",
-        data: [income, expense, savings],
-        backgroundColor: ["#86efac","#fca5a5","#a5b4fc"]
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: textColor }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: textColor },
-          grid: { color: gridColor }
-        },
-        y: {
-          ticks: { color: textColor },
-          grid: { color: gridColor }
-        }
-      }
-    }
-  });
-
-  /* -------- LINE CHART -------- */
-  let running = 0;
-  const trend = [];
-
-  transactions.forEach(t => {
-    running += t.type === "income" ? t.amount : -t.amount;
-    trend.push(running);
-  });
-
-  if (lineChart) lineChart.destroy();
-  lineChart = new Chart(document.getElementById("lineChart"), {
-    type: "line",
-    data: {
-      labels: trend.map((_, i) => `T${i + 1}`),
-      datasets: [{
-        label: "Balance",
-        data: trend,
-        borderColor: "#bfa7f3",
-        backgroundColor: "transparent",
-        tension: 0.3
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: textColor }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: textColor },
-          grid: { color: gridColor }
-        },
-        y: {
-          ticks: { color: textColor },
-          grid: { color: gridColor }
-        }
-      }
-    }
-  });
-}
-
-/* =========================
-   CRUD
+   ADD TRANSACTION
 ========================= */
 async function addTransaction() {
   const type = document.getElementById("type").value;
@@ -192,25 +93,37 @@ async function addTransaction() {
   const amount = document.getElementById("amount").value;
   const note = document.getElementById("note").value;
 
-  if (!amount) return alert("Enter amount");
+  if (!amount) {
+    alert("Enter amount");
+    return;
+  }
 
-  await fetch(`${API}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: user._id,
-      type,
-      category: type === "income" ? "Income" : category,
-      amount: Number(amount),
-      note
-    })
-  });
+  try {
+    await fetch(`${API}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        type,
+        category: type === "income" ? "Income" : category,
+        amount: Number(amount),
+        note,
+      }),
+    });
 
-  loadTransactions();
+    document.getElementById("amount").value = "";
+    document.getElementById("note").value = "";
+    document.getElementById("category").value = "";
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Add failed");
+  }
 }
 
 /* =========================
-   EDIT TRANSACTION (FIXED)
+   EDIT TRANSACTION
 ========================= */
 async function editTransaction(id, category, amount, type) {
   const newAmount = prompt("Edit amount:", amount);
@@ -224,14 +137,12 @@ async function editTransaction(id, category, amount, type) {
         amount: Number(newAmount),
         category,
         type,
-        userId: user._id
-      })
+        userId: user._id,
+      }),
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      console.error("EDIT FAILED:", err);
-      alert("Edit failed. Check backend route.");
+      alert("Edit failed");
       return;
     }
 
@@ -243,20 +154,18 @@ async function editTransaction(id, category, amount, type) {
 }
 
 /* =========================
-   DELETE TRANSACTION (FIXED)
+   DELETE TRANSACTION
 ========================= */
 async function deleteTransaction(id) {
   if (!confirm("Delete this transaction?")) return;
 
   try {
     const res = await fetch(`${API}/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      console.error("DELETE FAILED:", err);
-      alert("Delete failed. Check backend route.");
+      alert("Delete failed");
       return;
     }
 
@@ -268,16 +177,132 @@ async function deleteTransaction(id) {
 }
 
 /* =========================
+   CHARTS
+========================= */
+function renderCharts(transactions, income, expense) {
+  const savings = income - expense;
+  const isDark = document.body.classList.contains("dark");
+
+  const textColor = isDark ? "#ffffff" : "#333";
+  const gridColor = isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb";
+
+  /* ===== PIE ===== */
+  const expenseMap = {};
+  transactions
+    .filter((t) => t.type === "expense")
+    .forEach((t) => {
+      expenseMap[t.category] =
+        (expenseMap[t.category] || 0) + t.amount;
+    });
+
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(expenseMap),
+      datasets: [
+        {
+          data: Object.values(expenseMap),
+          backgroundColor: [
+            "#ffd6a5",
+            "#fdffb6",
+            "#caffbf",
+            "#9bf6ff",
+            "#bdb2ff",
+          ],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
+    },
+  });
+
+  /* ===== BAR ===== */
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense", "Savings"],
+      datasets: [
+        {
+          label: "₹ Amount",
+          data: [income, expense, savings],
+          backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
+    },
+  });
+
+  /* ===== LINE ===== */
+  let running = 0;
+  const trend = [];
+
+  transactions.forEach((t) => {
+    running += t.type === "income" ? t.amount : -t.amount;
+    trend.push(running);
+  });
+
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: trend.map((_, i) => `T${i + 1}`),
+      datasets: [
+        {
+          label: "Balance",
+          data: trend,
+          borderColor: "#bfa7f3",
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
+    },
+  });
+}
+
+/* =========================
    THEME
 ========================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
-  loadTransactions(); // redraw charts with correct colors
+  loadTransactions();
 }
 
+/* =========================
+   LOGOUT
+========================= */
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
+/* =========================
+   INIT
+========================= */
 loadTransactions();
