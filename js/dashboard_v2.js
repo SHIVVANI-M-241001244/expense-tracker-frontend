@@ -23,38 +23,15 @@ const greetingMsg = document.getElementById("greetingMsg");
 
 if (greetingText && greetingMsg) {
   const hour = new Date().getHours();
+  let greet = "Good Morning";
 
-  const greet =
-    hour < 12 ? "Good Morning" :
-    hour < 17 ? "Good Afternoon" :
-    "Good Evening";
+  if (hour >= 12 && hour < 17) greet = "Good Afternoon";
+  else if (hour >= 17) greet = "Good Evening";
 
   greetingText.innerText = `${greet}, ${user.name} 💜`;
   greetingMsg.innerText =
     "Track your expenses, grow your savings, and stay in control ✨";
 }
-
-/* =========================
-   THEME TOGGLE
-========================= */
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-}
-
-/* =========================
-   LOGOUT
-========================= */
-function logout() {
-  localStorage.clear();
-  window.location.href = "login.html";
-}
-
-/* =========================
-   CHART VARIABLES
-========================= */
-let expensePieChart = null;
-let summaryBarChart = null;
-let trendLineChart = null;
 
 /* =========================
    LOAD TRANSACTIONS
@@ -66,35 +43,21 @@ async function loadTransactions() {
 
     let income = 0;
     let expense = 0;
-    let balanceTrend = [];
-    let expenseCategories = {};
 
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
     transactions.forEach((t) => {
-      if (t.type === "income") {
-        income += t.amount;
-      } else {
-        expense += t.amount;
-        expenseCategories[t.category] =
-          (expenseCategories[t.category] || 0) + t.amount;
-      }
-
-      balanceTrend.push(income - expense);
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
 
       const li = document.createElement("li");
       li.innerHTML = `
         <span>${t.category} - ₹${t.amount}</span>
-        <span>
-          <button onclick="editTransaction(
-            '${t._id}',
-            '${t.category}',
-            ${t.amount},
-            '${t.type}'
-          )">✏️</button>
+        <div>
+          <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
           <button onclick="deleteTransaction('${t._id}')">🗑️</button>
-        </span>
+        </div>
       `;
       list.appendChild(li);
     });
@@ -103,7 +66,6 @@ async function loadTransactions() {
     document.getElementById("totalExpense").innerText = `₹${expense}`;
     document.getElementById("balance").innerText = `₹${income - expense}`;
 
-    renderCharts(expenseCategories, income, expense, balanceTrend);
   } catch (err) {
     console.error(err);
   }
@@ -143,17 +105,24 @@ async function addTransaction() {
 }
 
 /* =========================
-   EDIT TRANSACTION
+   EDIT TRANSACTION (FIXED)
 ========================= */
 async function editTransaction(id, oldCategory, oldAmount, type) {
+  let newCategory = oldCategory;
+
+  if (type === "expense") {
+    newCategory = prompt("Edit category:", oldCategory);
+    if (!newCategory) return;
+  }
+
   const newAmount = prompt("Edit amount:", oldAmount);
-  if (!newAmount) return;
+  if (!newAmount || isNaN(newAmount)) return;
 
   await fetch(`${API}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      category: oldCategory,
+      category: newCategory,
       amount: Number(newAmount),
       type,
     }),
@@ -163,84 +132,32 @@ async function editTransaction(id, oldCategory, oldAmount, type) {
 }
 
 /* =========================
-   DELETE TRANSACTION
+   DELETE TRANSACTION (FIXED)
 ========================= */
 async function deleteTransaction(id) {
-  if (!confirm("Delete this transaction?")) return;
+  const confirmDelete = confirm("Are you sure you want to delete?");
+  if (!confirmDelete) return;
 
-  await fetch(`${API}/${id}`, { method: "DELETE" });
+  await fetch(`${API}/${id}`, {
+    method: "DELETE",
+  });
+
   loadTransactions();
 }
 
 /* =========================
-   CHARTS
+   LOGOUT
 ========================= */
-function renderCharts(categories, income, expense, trend) {
-  expensePieChart?.destroy();
-  summaryBarChart?.destroy();
-  trendLineChart?.destroy();
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
 
-  /* EXPENSE PIE */
-  expensePieChart = new Chart(
-    document.getElementById("expensePie"),
-    {
-      type: "pie",
-      data: {
-        labels: Object.keys(categories),
-        datasets: [
-          {
-            data: Object.values(categories),
-            backgroundColor: [
-              "#ffb4b4",
-              "#ffd6a5",
-              "#caffbf",
-              "#bdb2ff",
-              "#ffc6ff",
-            ],
-          },
-        ],
-      },
-      options: { responsive: true, maintainAspectRatio: false },
-    }
-  );
-
-  /* SUMMARY BAR */
-  summaryBarChart = new Chart(
-    document.getElementById("summaryBar"),
-    {
-      type: "bar",
-      data: {
-        labels: ["Income", "Expense", "Savings"],
-        datasets: [
-          {
-            data: [income, expense, income - expense],
-            backgroundColor: ["#caffbf", "#ffb4b4", "#bdb2ff"],
-          },
-        ],
-      },
-      options: { responsive: true, maintainAspectRatio: false },
-    }
-  );
-
-  /* TREND LINE */
-  trendLineChart = new Chart(
-    document.getElementById("trendChart"),
-    {
-      type: "line",
-      data: {
-        labels: trend.map((_, i) => i + 1),
-        datasets: [
-          {
-            data: trend,
-            borderColor: "#b8b5ff",
-            fill: false,
-            tension: 0.3,
-          },
-        ],
-      },
-      options: { responsive: true, maintainAspectRatio: false },
-    }
-  );
+/* =========================
+   DARK MODE
+========================= */
+function toggleTheme() {
+  document.body.classList.toggle("dark");
 }
 
 /* =========================
