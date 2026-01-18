@@ -1,7 +1,7 @@
 console.log("DASHBOARD JS LOADED");
 
 /* =========================
-   AUTH CHECK
+   AUTH
 ========================= */
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -10,9 +10,6 @@ if (!user || !user._id) {
   window.location.href = "login.html";
 }
 
-/* =========================
-   API
-========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 /* =========================
@@ -22,58 +19,72 @@ const greetingText = document.getElementById("greetingText");
 const greetingMsg = document.getElementById("greetingMsg");
 
 const hour = new Date().getHours();
-let greeting = "";
-let message = "";
+let greet = "";
+let msg = "";
 
 if (hour < 12) {
-  greeting = "Good Morning";
-  message = "Start your day by tracking your expenses mindfully ✨";
+  greet = "Good Morning";
+  msg = "Start your day by tracking your expenses mindfully ✨";
 } else if (hour < 17) {
-  greeting = "Good Afternoon";
-  message = "A small check today keeps your finances healthy 💜";
+  greet = "Good Afternoon";
+  msg = "A small check today keeps your finances healthy 💜";
 } else {
-  greeting = "Good Evening";
-  message = "Review your spending and save smarter 🌙";
+  greet = "Good Evening";
+  msg = "Review your spending and save smarter 🌙";
 }
 
-greetingText.innerText = `${greeting}, ${user.name}`;
-greetingMsg.innerText = message;
+greetingText.innerText = `${greet}, ${user.name}`;
+greetingMsg.innerText = msg;
+
+/* =========================
+   GLOBAL STATE
+========================= */
+let allTransactions = [];
 
 /* =========================
    LOAD TRANSACTIONS
 ========================= */
 async function loadTransactions() {
-  const res = await fetch(`${API}/${user._id}`);
-  const transactions = await res.json();
+  try {
+    const res = await fetch(`${API}/${user._id}`);
+    if (!res.ok) throw new Error("Fetch failed");
 
-  let income = 0;
-  let expense = 0;
+    allTransactions = await res.json();
 
-  const list = document.getElementById("transactionList");
-  list.innerHTML = "";
+    let income = 0;
+    let expense = 0;
 
-  transactions.forEach((t) => {
-    if (t.type === "income") income += t.amount;
-    else expense += t.amount;
+    const list = document.getElementById("transactionList");
+    list.innerHTML = "";
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${t.category} - ₹${t.amount}</span>
-      <div>
-        <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
-        <button onclick="deleteTransaction('${t._id}')">🗑️</button>
-      </div>
-    `;
-    list.appendChild(li);
-  });
+    allTransactions.forEach((t) => {
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
 
-  document.getElementById("totalIncome").innerText = `₹${income}`;
-  document.getElementById("totalExpense").innerText = `₹${expense}`;
-  document.getElementById("balance").innerText = `₹${income - expense}`;
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${t.category} - ₹${t.amount}</span>
+        <div>
+          <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+          <button onclick="deleteTransaction('${t._id}')">🗑️</button>
+        </div>
+      `;
+      list.appendChild(li);
+    });
+
+    document.getElementById("totalIncome").innerText = `₹${income}`;
+    document.getElementById("totalExpense").innerText = `₹${expense}`;
+    document.getElementById("balance").innerText = `₹${income - expense}`;
+
+    renderCharts(allTransactions, income, expense);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load transactions");
+  }
 }
 
 /* =========================
-   ADD
+   ADD TRANSACTION
 ========================= */
 async function addTransaction() {
   const type = document.getElementById("type").value;
@@ -102,16 +113,18 @@ async function addTransaction() {
 }
 
 /* =========================
-   EDIT
+   EDIT (FIXED)
 ========================= */
 async function editTransaction(id, oldCategory, oldAmount, type) {
-  const newCategory =
-    type === "income" ? "Income" : prompt("Edit category:", oldCategory);
-  const newAmount = prompt("Edit amount:", oldAmount);
+  console.log("EDIT ID:", id);
 
+  const newAmount = prompt("Edit amount:", oldAmount);
   if (!newAmount) return;
 
-  await fetch(`${API}/${id}`, {
+  const newCategory =
+    type === "income" ? "Income" : prompt("Edit category:", oldCategory);
+
+  const res = await fetch(`${API}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -121,16 +134,29 @@ async function editTransaction(id, oldCategory, oldAmount, type) {
     }),
   });
 
+  if (!res.ok) {
+    alert("Update failed");
+    return;
+  }
+
   loadTransactions();
 }
 
 /* =========================
-   DELETE
+   DELETE (FIXED)
 ========================= */
 async function deleteTransaction(id) {
+  console.log("DELETE ID:", id);
+
   if (!confirm("Delete this transaction?")) return;
 
-  await fetch(`${API}/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+
+  if (!res.ok) {
+    alert("Delete failed");
+    return;
+  }
+
   loadTransactions();
 }
 
