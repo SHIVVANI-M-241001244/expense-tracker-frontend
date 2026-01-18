@@ -283,3 +283,33 @@ body.dark select {
 #transactionList span {
   opacity: 0.9;
 }
+/* ================= GREETING ================= */
+.greeting-box h2 {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.greeting-box p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+  max-width: 420px;
+}
+/* ================= NIFTY CARD ================= */
+.nifty-card {
+  background: linear-gradient(135deg, #eef1ff, #f7f7fb);
+  padding: 18px 22px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow);
+}
+
+.nifty-card p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nifty-card h3 {
+  margin-top: 6px;
+  font-size: 15px;
+}
