@@ -146,15 +146,15 @@ function renderCharts(transactions, income, expense) {
         labels: Object.keys(expenseMap),
         datasets: [{
           data: Object.values(expenseMap),
-          backgroundColor: [
-            "#FDE68A",
-            "#93C5FD",
-            "#FCA5A5",
-            "#86EFAC",
-            "#FBCFE8",
-            "#C7D2FE"
+            backgroundColor: [
+            "#FFE5EC", // blush
+            "#E0FBFC", // soft aqua
+            "#EAE4FF", // lavender
+            "#FFF1C1", // pastel yellow
+            "#DCFCE7", // mint
+            "#FDE2E4"  // rose
           ],
-          borderWidth: 2,
+          Width: 2,
           borderColor: isDark ? "#2f2f46" : "#ffffff"
         }]
       },
