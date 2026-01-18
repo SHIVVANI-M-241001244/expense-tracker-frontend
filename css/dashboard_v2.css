@@ -196,3 +196,105 @@ body.dark .delete-btn {
   background: #7f1d1d;
   color: #fee2e2;
 }
+/* ================= AESTHETIC TRANSACTION LIST ================= */
+
+/* Transaction list container */
+#transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Each transaction row */
+#transactionList li {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 16px;
+  padding: 14px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover effect */
+#transactionList li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* Left text (category + amount) */
+#transactionList li span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ================= EDIT / DELETE BUTTONS ================= */
+
+.tx-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons base */
+.tx-actions button {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 15px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+/* Edit */
+.edit-btn {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.edit-btn:hover {
+  background: #c7d2fe;
+  transform: scale(1.1);
+}
+
+/* Delete */
+.delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+  transform: scale(1.1);
+}
+
+/* ================= DARK MODE ================= */
+
+body.dark #transactionList li {
+  background: linear-gradient(135deg, #0f172a, #020617);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+body.dark #transactionList li span {
+  color: #f8fafc;
+}
+
+body.dark .edit-btn {
+  background: #312e81;
+  color: #e0e7ff;
+}
+
+body.dark .delete-btn {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
