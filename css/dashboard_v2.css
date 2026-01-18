@@ -224,3 +224,62 @@ body.dark .nifty-tag {
   font-size: 13px;
   opacity: 0.8;
 }
+/* ================= CARD HOVER ================= */
+.card,
+.summary-card,
+.nifty-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover,
+.summary-card:hover,
+.nifty-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 45px rgba(0,0,0,0.12);
+}
+/* ================= PAGE FADE ================= */
+body {
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ================= DARK MODE TEXT FIX ================= */
+body.dark {
+  color: #f1f1f1;
+}
+
+body.dark h2,
+body.dark h3,
+body.dark p,
+body.dark span,
+body.dark li {
+  color: #f1f1f1;
+}
+
+body.dark .summary-card h3 {
+  color: #ffffff;
+}
+
+body.dark input,
+body.dark select {
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.2);
+}
+/* ================= TRANSACTION CLEAN ================= */
+#transactionList li {
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+#transactionList span {
+  opacity: 0.9;
+}
