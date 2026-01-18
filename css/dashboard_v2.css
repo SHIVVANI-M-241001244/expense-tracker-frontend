@@ -1,32 +1,34 @@
+/* ================= ROOT VARIABLES ================= */
 :root {
   --bg: linear-gradient(135deg, #f6f7fb, #efeaff);
   --card: #ffffff;
   --text: #2f2f2f;
-  --muted: #8b8b8b;
+  --muted: #6b7280;
 
-  --income: #e6fff2;
-  --expense: #ffecec;
-  --savings: #eef1ff;
+  --income: #22c55e;
+  --expense: #ef4444;
+  --savings: #6366f1;
 
-  --primary: #b8b5ff;
+  --primary: #818cf8;
   --shadow: 0 20px 40px rgba(0,0,0,0.06);
 }
 
-/* ================= DARK MODE VARIABLES ================= */
+/* ================= DARK MODE ================= */
 body.dark {
-  --bg: linear-gradient(135deg, #1e1e2e, #2a2a40);
-  --card: #2f2f46;
-  --text: #f5f5f5;        /* 🔥 MAIN TEXT FIX */
-  --muted: #cfcfe8;       /* 🔥 SUBTEXT FIX */
+  --bg: #020617;
+  --card: #0f172a;
+  --text: #f8fafc;
+  --muted: #94a3b8;
 
-  --income: #1f3d2b;
-  --expense: #3a1f25;
-  --savings: #2a2f55;
+  --income: #22c55e;
+  --expense: #ef4444;
+  --savings: #6366f1;
 
-  --primary: #a5b4fc;
-  --shadow: 0 20px 40px rgba(0,0,0,0.45);
+  --primary: #6366f1;
+  --shadow: 0 20px 40px rgba(0,0,0,0.6);
 }
 
+/* ================= BASE ================= */
 * {
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
@@ -34,25 +36,28 @@ body.dark {
 
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
 }
 
 /* ================= TOP BAR ================= */
 .top-bar {
   display: flex;
   justify-content: space-between;
-  padding: 30px 40px;
+  align-items: center;
+  padding: 28px 40px;
 }
 
-.top-bar h2 {
-  font-weight: 600;
-  color: var(--text);   /* 🔥 FIX */
+.greeting-box h2 {
+  font-size: 22px;
+  margin-bottom: 6px;
 }
 
-.top-bar p {
-  color: var(--muted); /* 🔥 FIX */
+.greeting-box p {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 420px;
 }
 
 /* ================= CONTAINER ================= */
@@ -71,26 +76,28 @@ body {
 }
 
 .summary-card {
+  background: var(--card);
   padding: 22px;
   border-radius: 20px;
   box-shadow: var(--shadow);
   text-align: center;
-  color: var(--text); /* 🔥 FIX */
 }
 
 .summary-card p {
-  color: var(--muted); /* 🔥 FIX */
   font-size: 14px;
+  color: var(--muted);
 }
 
 .summary-card h3 {
   margin-top: 8px;
-  color: var(--text); /* 🔥 FIX */
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
 }
 
-.income { background: var(--income); }
-.expense { background: var(--expense); }
-.balance { background: var(--savings); }
+.summary-card.income { border-left: 4px solid var(--income); }
+.summary-card.expense { border-left: 4px solid var(--expense); }
+.summary-card.balance { border-left: 4px solid var(--savings); }
 
 /* ================= CARD ================= */
 .card {
@@ -99,28 +106,28 @@ body {
   padding: 22px;
   margin-bottom: 25px;
   box-shadow: var(--shadow);
-  color: var(--text); /* 🔥 FIX */
-}
-
-.card h3 {
-  color: var(--text); /* 🔥 FIX */
 }
 
 /* ================= INPUTS ================= */
-input,
-select {
+input, select {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   margin-top: 10px;
   border-radius: 14px;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,0.15);
   background: transparent;
-  color: var(--text); /* 🔥 FIX */
+  color: var(--text);
+}
+
+input::placeholder {
+  color: var(--muted);
 }
 
 body.dark input,
 body.dark select {
-  border-color: #555;
+  background: #020617;
+  border-color: rgba(255,255,255,0.2);
+  color: #f8fafc;
 }
 
 /* ================= BUTTON ================= */
@@ -131,170 +138,101 @@ button {
   padding: 12px;
   border-radius: 14px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
 /* ================= TRANSACTIONS ================= */
 #transactionList {
-  padding: 0;
   list-style: none;
+  padding: 0;
 }
 
 #transactionList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  gap: 12px;
+
+  padding: 14px 16px;
   margin-bottom: 10px;
   border-radius: 14px;
+
   background: rgba(0,0,0,0.05);
-  font-size: 14px;
-  color: var(--text); /* 🔥 FIX */
 }
 
 body.dark #transactionList li {
   background: rgba(255,255,255,0.08);
 }
 
+#transactionList span {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ================= EDIT / DELETE BUTTONS ================= */
+.tx-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.tx-actions button {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: none;
+
+  font-size: 16px;
+  cursor: pointer;
+
+  background: #e5e7eb;
+  color: #111827;
+}
+
+/* Light mode */
+.edit-btn {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Dark mode */
+body.dark .edit-btn {
+  background: #312e81;
+  color: #e0e7ff;
+}
+
+body.dark .delete-btn {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+
+/* Hover */
+.edit-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.08);
+}
+
 /* ================= CHARTS ================= */
 canvas {
-  display: block;
   width: 100% !important;
   height: 260px !important;
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 900px) {
-  .summary {
-    grid-template-columns: 1fr;
-  }
-}
-/* ================= NIFTY CARD ================= */
-.nifty-card {
-  background: linear-gradient(135deg, #fdf2f8, #eef2ff);
+#pieChart {
+  max-width: 360px;
+  max-height: 360px;
+  margin: 0 auto;
 }
 
-body.dark .nifty-card {
-  background: linear-gradient(135deg, #2a2a40, #1e1e2e);
-}
-
-.nifty-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nifty-title {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.nifty-tag {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.08);
-}
-
-body.dark .nifty-tag {
-  background: rgba(255,255,255,0.15);
-}
-
-.nifty-value {
-  margin-top: 12px;
-}
-
-.nifty-value h2 {
-  margin: 0;
-  font-size: 28px;
-}
-
-.nifty-up {
-  color: #16a34a;
-  font-weight: 500;
-}
-
-.nifty-down {
-  color: #dc2626;
-  font-weight: 500;
-}
-
-.nifty-msg {
-  margin-top: 10px;
-  font-size: 13px;
-  opacity: 0.8;
-}
-/* ================= CARD HOVER ================= */
-.card,
-.summary-card,
-.nifty-card {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.card:hover,
-.summary-card:hover,
-.nifty-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 25px 45px rgba(0,0,0,0.12);
-}
-/* ================= PAGE FADE ================= */
-body {
-  animation: fadeIn 0.6s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* ================= DARK MODE TEXT FIX ================= */
-body.dark {
-  color: #f1f1f1;
-}
-
-body.dark h2,
-body.dark h3,
-body.dark p,
-body.dark span,
-body.dark li {
-  color: #f1f1f1;
-}
-
-body.dark .summary-card h3 {
-  color: #ffffff;
-}
-
-body.dark input,
-body.dark select {
-  color: #ffffff;
-  border-color: rgba(255,255,255,0.2);
-}
-/* ================= TRANSACTION CLEAN ================= */
-#transactionList li {
-  font-size: 13px;
-  padding: 10px 12px;
-}
-
-#transactionList span {
-  opacity: 0.9;
-}
-/* ================= GREETING ================= */
-.greeting-box h2 {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.greeting-box p {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 6px;
-  max-width: 420px;
-}
 /* ================= NIFTY CARD ================= */
 .nifty-card {
   background: linear-gradient(135deg, #eef1ff, #f7f7fb);
@@ -304,156 +242,47 @@ body.dark select {
   box-shadow: var(--shadow);
 }
 
-.nifty-card p {
-  font-size: 12px;
-  color: var(--muted);
+body.dark .nifty-card {
+  background: linear-gradient(135deg, #0f172a, #020617);
 }
 
-.nifty-card h3 {
-  margin-top: 6px;
-  font-size: 15px;
-}
-/* ================= DARK MODE READABILITY FIX ================= */
-
-/* Force text visibility */
-body.dark,
-body.dark h1,
-body.dark h2,
-body.dark h3,
-body.dark p,
-body.dark span,
-body.dark li {
-  color: #f3f4f6 !important;
+.nifty-header {
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Muted text in dark mode */
-body.dark .muted,
-body.dark .greeting-box p,
-body.dark .top-bar p {
-  color: #cbd5f5 !important;
-}
-
-/* Summary numbers (₹ values) */
-body.dark .summary-card h3 {
-  color: #ffffff !important;
+.nifty-title {
   font-weight: 600;
 }
 
-/* Card background clarity */
-body.dark .card,
-body.dark .summary-card,
-body.dark .nifty-card {
-  background: #2f2f46 !important;
+.nifty-tag {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.1);
 }
 
-/* Transaction list items */
-body.dark #transactionList li {
-  background: rgba(255,255,255,0.08) !important;
-  color: #f1f1f1 !important;
+body.dark .nifty-tag {
+  background: rgba(255,255,255,0.15);
 }
 
-/* Inputs & selects */
-body.dark input,
-body.dark select {
-  background: #1e1e2e !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-
-/* Buttons */
-body.dark button {
-  color: #ffffff !important;
-}
-/* ================= CHART SIZE POLISH ================= */
-
-/* Chart containers */
-.card canvas {
-  width: 100% !important;
-  display: block;
-}
-
-/* Pie chart – slightly bigger, centered */
-#pieChart {
-  max-width: 360px !important;
-  max-height: 360px !important;
-  margin: 0 auto;
-}
-
-/* Bar & Line charts – balanced height */
-#barChart,
-#lineChart {
-  height: 260px !important;
-}
-
-/* Chart cards should not stretch */
-.card {
-  overflow: hidden;
-}
-/* ================= DARK MODE TEXT FIX ================= */
-
-/* General text */
-body.dark {
-  color: #f1f1f1;
-}
-
-/* Headings */
-body.dark h2,
-body.dark h3,
-body.dark h4 {
-  color: #ffffff;
-}
-
-/* Muted text (messages, subtitles) */
-body.dark p {
-  color: #cbd5e1;
-}
-
-/* Summary numbers */
-body.dark .summary-card h3 {
-  color: #ffffff;
-}
-
-/* Summary labels */
-body.dark .summary-card p {
-  color: #e5e7eb;
-}
-
-/* Transaction text */
-body.dark #transactionList li span {
-  color: #f8fafc;
-}
-
-/* Inputs & selects */
-body.dark input,
-body.dark select {
-  background: #1e1e2e;
-  color: #ffffff;
-  border: 1px solid #4b5563;
-}
-
-/* Input placeholder */
-body.dark input::placeholder {
-  color: #9ca3af;
-}
-
-/* Buttons */
-body.dark button {
-  color: #ffffff;
-}
-
-/* Chart legends & labels (extra safety) */
-body.dark canvas {
-  filter: brightness(1.05);
-}
-/* Greeting polish */
-.top-bar h2 {
-  font-size: 22px;
-  margin-bottom: 4px;
-}
-
-.top-bar p {
-  font-size: 14px;
-  opacity: 0.85;
+.nifty-value h2 {
   margin: 0;
+  font-size: 28px;
 }
 
+.nifty-up { color: #22c55e; font-weight: 600; }
+.nifty-down { color: #ef4444; font-weight: 600; }
+
+.nifty-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}

@@ -11,14 +11,16 @@
 <body>
 
 <header class="top-bar">
-  <div>
+  <div class="greeting-box">
     <h2 id="greetingText"></h2>
-    <p id="greetingMsg">Track your money mindfully and watch your savings grow ✨</p>
+    <p id="greetingMsg">
+      Stay consistent today — small savings build big freedom 🌱
+    </p>
   </div>
 
   <div class="top-actions">
-    <button onclick="toggleTheme()">🌙</button>
-    <button onclick="logout()">Logout</button>
+    <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </header>
 
@@ -41,20 +43,24 @@
       <h3 id="balance">₹0</h3>
     </div>
   </section>
-  <!-- ================= NIFTY CARD ================= -->
-<section class="card nifty-card">
-  <div class="nifty-header">
-    <span class="nifty-title">NIFTY 50</span>
-    <span class="nifty-tag">Market</span>
-  </div>
 
-  <div class="nifty-value">
-    <h2 id="niftyValue">22,450.35</h2>
-    <span id="niftyChange" class="nifty-up">+124.60 (+0.56%)</span>
-  </div>
+  <!-- NIFTY CARD -->
+  <section class="card nifty-card">
+    <div class="nifty-header">
+      <span class="nifty-title">NIFTY 50</span>
+      <span class="nifty-tag">Market</span>
+    </div>
 
-  <p class="nifty-msg">Market snapshot for inspiration, not trading 📊</p>
-</section>
+    <div class="nifty-value">
+      <h2 id="niftyValue">22,450.35</h2>
+      <span id="niftyChange" class="nifty-up">+124.60 (+0.56%)</span>
+    </div>
+
+    <p class="nifty-msg">
+      Market snapshot for inspiration, not trading 📊
+    </p>
+  </section>
+
   <!-- ADD TRANSACTION -->
   <section class="card">
     <h3>Add Transaction</h3>
@@ -104,6 +110,6 @@
 
 </main>
 
-<script src="js/dashboard_v2.js"></script>
+<script src="js/dashboard_v2.js?v=2"></script>
 </body>
 </html>
