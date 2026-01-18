@@ -1,81 +1,75 @@
 :root {
-  --bg:#f6f7fb;
-  --card:#fff;
-  --text:#111;
-  --muted:#6b7280;
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #1f2937;
 }
 
 body.dark {
-  --bg:#020617;
-  --card:#0f172a;
-  --text:#f8fafc;
-  --muted:#94a3b8;
+  --bg: #020617;
+  --card: #0f172a;
+  --text: #f8fafc;
 }
 
 body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Poppins,sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Poppins, sans-serif;
 }
 
 .top-bar {
-  display:flex;
-  justify-content:space-between;
-  padding:24px 40px;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 30px;
 }
 
 .container {
-  max-width:1200px;
-  margin:auto;
-  padding:20px;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
 }
 
 .summary {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
 }
 
 .summary-card {
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
 }
 
-.summary-card.income {background:#dcfce7;}
-.summary-card.expense {background:#fee2e2;}
-.summary-card.balance {background:#e0e7ff;}
+.income { background: #dcfce7; }
+.expense { background: #fee2e2; }
+.balance { background: #e0e7ff; }
 
-body.dark .summary-card.income {background:#14532d;}
-body.dark .summary-card.expense {background:#7f1d1d;}
-body.dark .summary-card.balance {background:#1e3a8a;}
-
-.card {
-  background:var(--card);
-  padding:20px;
-  border-radius:20px;
-  margin-top:20px;
+.card, .nifty-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
 }
 
-canvas {height:260px!important;}
+ul { list-style: none; padding: 0; }
 
-.nifty-card {
-  background:linear-gradient(135deg,#eef2ff,#fdf2f8);
+li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 12px;
 }
 
-body.dark .nifty-card {
-  background:linear-gradient(135deg,#1e293b,#020617);
+.tx-actions button {
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
 }
 
-.budget-status.safe {color:#16a34a;}
-.budget-status.over {color:#dc2626;}
-
-button {
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  background:#818cf8;
-  color:white;
-  cursor:pointer;
+canvas {
+  width: 100% !important;
+  height: 260px !important;
 }
