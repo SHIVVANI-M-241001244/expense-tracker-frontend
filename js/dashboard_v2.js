@@ -4,7 +4,6 @@ console.log("DASHBOARD JS LOADED");
    AUTH CHECK
 ========================= */
 const user = JSON.parse(localStorage.getItem("user"));
-
 if (!user || !user._id) {
   alert("Invalid user. Please login again.");
   window.location.href = "login.html";
@@ -16,6 +15,13 @@ if (!user || !user._id) {
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 /* =========================
+   DARK MODE LOAD
+========================= */
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+/* =========================
    GREETING
 ========================= */
 const greetingText = document.getElementById("greetingText");
@@ -24,51 +30,55 @@ const greetingMsg = document.getElementById("greetingMsg");
 if (greetingText && greetingMsg) {
   const hour = new Date().getHours();
   let greet = "Good Morning";
-
   if (hour >= 12 && hour < 17) greet = "Good Afternoon";
   else if (hour >= 17) greet = "Good Evening";
 
   greetingText.innerText = `${greet}, ${user.name} 💜`;
   greetingMsg.innerText =
-    "Track your expenses, grow your savings, and stay in control ✨";
+    "Track your money smartly and build better savings ✨";
 }
+
+/* =========================
+   CHART INSTANCES
+========================= */
+let pieChart, barChart, lineChart;
 
 /* =========================
    LOAD TRANSACTIONS
 ========================= */
 async function loadTransactions() {
-  try {
-    const res = await fetch(`${API}/${user._id}`);
-    const transactions = await res.json();
+  const res = await fetch(`${API}/${user._id}`);
+  const transactions = await res.json();
 
-    let income = 0;
-    let expense = 0;
+  let income = 0;
+  let expense = 0;
+  let balance = 0;
 
-    const list = document.getElementById("transactionList");
-    list.innerHTML = "";
+  const list = document.getElementById("transactionList");
+  list.innerHTML = "";
 
-    transactions.forEach((t) => {
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+  transactions.forEach((t) => {
+    if (t.type === "income") income += t.amount;
+    else expense += t.amount;
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span>${t.category} - ₹${t.amount}</span>
-        <div>
-          <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
-          <button onclick="deleteTransaction('${t._id}')">🗑️</button>
-        </div>
-      `;
-      list.appendChild(li);
-    });
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${t.category} - ₹${t.amount}</span>
+      <div>
+        <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+        <button onclick="deleteTransaction('${t._id}')">🗑️</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
 
-    document.getElementById("totalIncome").innerText = `₹${income}`;
-    document.getElementById("totalExpense").innerText = `₹${expense}`;
-    document.getElementById("balance").innerText = `₹${income - expense}`;
+  balance = income - expense;
 
-  } catch (err) {
-    console.error(err);
-  }
+  document.getElementById("totalIncome").innerText = `₹${income}`;
+  document.getElementById("totalExpense").innerText = `₹${expense}`;
+  document.getElementById("balance").innerText = `₹${balance}`;
+
+  renderCharts(transactions, income, expense, balance);
 }
 
 /* =========================
@@ -81,7 +91,7 @@ async function addTransaction() {
   const note = document.getElementById("note").value;
 
   if (!amount || (type === "expense" && !category)) {
-    alert("Please fill all required fields");
+    alert("Fill all required fields");
     return;
   }
 
@@ -105,18 +115,17 @@ async function addTransaction() {
 }
 
 /* =========================
-   EDIT TRANSACTION (FIXED)
+   EDIT
 ========================= */
 async function editTransaction(id, oldCategory, oldAmount, type) {
   let newCategory = oldCategory;
-
   if (type === "expense") {
     newCategory = prompt("Edit category:", oldCategory);
     if (!newCategory) return;
   }
 
   const newAmount = prompt("Edit amount:", oldAmount);
-  if (!newAmount || isNaN(newAmount)) return;
+  if (!newAmount) return;
 
   await fetch(`${API}/${id}`, {
     method: "PUT",
@@ -132,16 +141,126 @@ async function editTransaction(id, oldCategory, oldAmount, type) {
 }
 
 /* =========================
-   DELETE TRANSACTION (FIXED)
+   DELETE
 ========================= */
 async function deleteTransaction(id) {
-  const confirmDelete = confirm("Are you sure you want to delete?");
-  if (!confirmDelete) return;
+  if (!confirm("Delete this transaction?")) return;
 
-  await fetch(`${API}/${id}`, {
-    method: "DELETE",
+  await fetch(`${API}/${id}`, { method: "DELETE" });
+  loadTransactions();
+}
+
+/* =========================
+   CHART RENDERING
+========================= */
+function renderCharts(transactions, income, expense, balance) {
+  /* ---------- PIE (EXPENSE BY CATEGORY) ---------- */
+  const expenseMap = {};
+  transactions
+    .filter((t) => t.type === "expense")
+    .forEach((t) => {
+      expenseMap[t.category] =
+        (expenseMap[t.category] || 0) + t.amount;
+    });
+
+  const pieLabels = Object.keys(expenseMap);
+  const pieData = Object.values(expenseMap);
+
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(document.getElementById("expensePie"), {
+    type: "pie",
+    data: {
+      labels: pieLabels,
+      datasets: [
+        {
+          data: pieData,
+          backgroundColor: [
+            "#fbcfe8",
+            "#ddd6fe",
+            "#bbf7d0",
+            "#fde68a",
+            "#bfdbfe",
+          ],
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: { color: getComputedStyle(document.body).color },
+        },
+      },
+    },
   });
 
+  /* ---------- BAR (INCOME / EXPENSE / SAVINGS) ---------- */
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById("summaryBar"), {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense", "Savings"],
+      datasets: [
+        {
+          data: [income, expense, balance],
+          backgroundColor: ["#bbf7d0", "#fecaca", "#c7d2fe"],
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          ticks: { color: getComputedStyle(document.body).color },
+        },
+        x: {
+          ticks: { color: getComputedStyle(document.body).color },
+        },
+      },
+    },
+  });
+
+  /* ---------- LINE (BALANCE TREND) ---------- */
+  let runningBalance = 0;
+  const trend = transactions.map((t) => {
+    runningBalance += t.type === "income" ? t.amount : -t.amount;
+    return runningBalance;
+  });
+
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(document.getElementById("trendChart"), {
+    type: "line",
+    data: {
+      labels: trend.map((_, i) => `T${i + 1}`),
+      datasets: [
+        {
+          label: "Balance",
+          data: trend,
+          borderColor: "#a5b4fc",
+          tension: 0.4,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          ticks: { color: getComputedStyle(document.body).color },
+        },
+        x: {
+          ticks: { color: getComputedStyle(document.body).color },
+        },
+      },
+    },
+  });
+}
+
+/* =========================
+   THEME TOGGLE
+========================= */
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
   loadTransactions();
 }
 
@@ -151,13 +270,6 @@ async function deleteTransaction(id) {
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
-}
-
-/* =========================
-   DARK MODE
-========================= */
-function toggleTheme() {
-  document.body.classList.toggle("dark");
 }
 
 /* =========================
