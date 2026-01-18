@@ -17,23 +17,35 @@ function renderCharts(transactions, income, expense) {
   if (pieChart) pieChart.destroy();
 
   pieChart = new Chart(pieCtx, {
-    type: "pie",
-    data: {
-      labels: Object.keys(expenseMap),
-      datasets: [
-        {
-          data: Object.values(expenseMap),
-          backgroundColor: [
-            "#f6c1cc",
-            "#cdb4db",
-            "#bde0fe",
-            "#ffc8dd",
-            "#d6eadf",
-          ],
-        },
+  type: "pie",
+  data: {
+    labels,
+    datasets: [{
+      data,
+      backgroundColor: [
+        "#f8b4b4",
+        "#fcd5ce",
+        "#fae1dd",
+        "#cdb4db",
+        "#bde0fe",
+        "#a2d2ff"
       ],
-    },
-  });
+    }],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          boxWidth: 12,
+          padding: 15
+        }
+      }
+    }
+  }
+});
 
   /* =========================
      BAR CHART – INCOME / EXPENSE / SAVINGS

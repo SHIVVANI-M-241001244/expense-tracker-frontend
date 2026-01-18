@@ -291,3 +291,16 @@ button {
   margin-left: 5px;
 }
 
+/* =========================
+   CHART FIX
+========================= */
+.card canvas {
+  max-width: 100%;
+  height: 280px !important;
+}
+
+@media (max-width: 768px) {
+  .card canvas {
+    height: 220px !important;
+  }
+}
