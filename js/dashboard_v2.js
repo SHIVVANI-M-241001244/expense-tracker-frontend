@@ -1,31 +1,48 @@
 console.log("DASHBOARD JS LOADED");
 
-/* ================= AUTH ================= */
+/* =========================
+   AUTH CHECK
+========================= */
 const user = JSON.parse(localStorage.getItem("user"));
+
 if (!user || !user._id) {
   alert("Invalid user. Please login again.");
   window.location.href = "login.html";
 }
 
+/* =========================
+   API
+========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
-let pieChart, barChart, lineChart;
+/* =========================
+   GLOBAL CHARTS
+========================= */
+let pieChart = null;
+let barChart = null;
+let lineChart = null;
 
-/* ================= GREETING ================= */
+/* =========================
+   GREETING
+========================= */
 const greetingText = document.getElementById("greetingText");
 const greetingMsg = document.getElementById("greetingMsg");
 
-const hour = new Date().getHours();
-const greet =
-  hour < 12 ? "Good Morning" :
-  hour < 17 ? "Good Afternoon" :
-  "Good Evening";
+if (greetingText) {
+  const hour = new Date().getHours();
+  const greet =
+    hour < 12 ? "Good Morning" :
+    hour < 17 ? "Good Afternoon" :
+    "Good Evening";
 
-greetingText.innerText = `${greet}, ${user.name} 💜`;
-greetingMsg.innerText =
-  "Track your money mindfully and watch your savings grow ✨";
+  greetingText.innerText = `${greet}, ${user.name} 💜`;
+  greetingMsg.innerText =
+    "Track your money mindfully and watch your savings grow ✨";
+}
 
-/* ================= LOAD TRANSACTIONS ================= */
+/* =========================
+   LOAD TRANSACTIONS
+========================= */
 async function loadTransactions() {
   try {
     const res = await fetch(`${API}/${user._id}`);
@@ -42,7 +59,7 @@ async function loadTransactions() {
       else expense += t.amount;
 
       const li = document.createElement("li");
-      li.innerHTML = `<span>${t.category} – ₹${t.amount}</span>`;
+      li.innerText = `${t.category} – ₹${t.amount}`;
       list.appendChild(li);
     });
 
@@ -57,7 +74,9 @@ async function loadTransactions() {
   }
 }
 
-/* ================= ADD TRANSACTION ================= */
+/* =========================
+   ADD TRANSACTION
+========================= */
 async function addTransaction() {
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
@@ -69,96 +88,130 @@ async function addTransaction() {
     return;
   }
 
-  await fetch(`${API}/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: user._id,
-      type,
-      category: type === "income" ? "Income" : category,
-      amount: Number(amount),
-      note,
-    }),
-  });
+  try {
+    await fetch(`${API}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        type,
+        category: type === "income" ? "Income" : category,
+        amount: Number(amount),
+        note,
+      }),
+    });
 
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  document.getElementById("category").value = "";
+    document.getElementById("amount").value = "";
+    document.getElementById("note").value = "";
+    document.getElementById("category").value = "";
 
-  loadTransactions();
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Add failed");
+  }
 }
 
-/* ================= CHARTS ================= */
+/* =========================
+   CHARTS (FIXED)
+========================= */
 function renderCharts(transactions, income, expense) {
   const savings = income - expense;
 
+  /* ===== PIE CHART ===== */
   const expenseMap = {};
-  transactions.filter(t => t.type === "expense").forEach(t => {
-    expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
-  });
+  transactions
+    .filter((t) => t.type === "expense")
+    .forEach((t) => {
+      expenseMap[t.category] =
+        (expenseMap[t.category] || 0) + t.amount;
+    });
 
   if (pieChart) pieChart.destroy();
-  pieChart = new Chart(pieChartEl(), {
+  pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
       labels: Object.keys(expenseMap),
       datasets: [{
         data: Object.values(expenseMap),
-        backgroundColor: ["#ffd6a5","#fdffb6","#caffbf","#9bf6ff","#bdb2ff"]
-      }]
+        backgroundColor: [
+          "#ffd6a5",
+          "#fdffb6",
+          "#caffbf",
+          "#9bf6ff",
+          "#bdb2ff",
+        ],
+      }],
     },
-    options: { maintainAspectRatio: false }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    },
   });
 
+  /* ===== BAR CHART ===== */
   if (barChart) barChart.destroy();
-  barChart = new Chart(barChartEl(), {
+  barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: ["Income","Expense","Savings"],
+      labels: ["Income", "Expense", "Savings"],
       datasets: [{
+        label: "₹ Amount",
         data: [income, expense, savings],
-        backgroundColor: ["#86efac","#fca5a5","#a5b4fc"]
-      }]
+        backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
+      }],
     },
-    options: { maintainAspectRatio: false }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    },
   });
 
+  /* ===== LINE CHART ===== */
   let running = 0;
   const trend = [];
-  transactions.forEach(t => {
+
+  transactions.forEach((t) => {
     running += t.type === "income" ? t.amount : -t.amount;
     trend.push(running);
   });
 
   if (lineChart) lineChart.destroy();
-  lineChart = new Chart(lineChartEl(), {
+  lineChart = new Chart(document.getElementById("lineChart"), {
     type: "line",
     data: {
-      labels: trend.map((_,i)=>`T${i+1}`),
+      labels: trend.map((_, i) => `T${i + 1}`),
       datasets: [{
+        label: "Balance",
         data: trend,
         borderColor: "#bfa7f3",
-        tension: 0.3
-      }]
+        tension: 0.3,
+      }],
     },
-    options: { maintainAspectRatio: false }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+    },
   });
 }
 
-function pieChartEl(){ return document.getElementById("pieChart"); }
-function barChartEl(){ return document.getElementById("barChart"); }
-function lineChartEl(){ return document.getElementById("lineChart"); }
-
-/* ================= THEME ================= */
+/* =========================
+   THEME
+========================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
   loadTransactions();
 }
 
-/* ================= LOGOUT ================= */
+/* =========================
+   LOGOUT
+========================= */
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
+/* =========================
+   INIT
+========================= */
 loadTransactions();
