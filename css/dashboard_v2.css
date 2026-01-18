@@ -405,3 +405,113 @@ body.dark .summary-card.balance {
     grid-template-columns: 1fr;
   }
 }
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  padding: 26px;
+  border-radius: 22px;
+  text-align: left;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+}
+
+.summary-card p {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.summary-card h3 {
+  margin-top: 10px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Pastel colors */
+.summary-card.income {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #065f46;
+}
+
+.summary-card.expense {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #7f1d1d;
+}
+
+.summary-card.balance {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #1e3a8a;
+}
+
+/* Dark mode */
+body.dark .summary-card.income {
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  color: #ecfdf5;
+}
+
+body.dark .summary-card.expense {
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+  color: #fff1f2;
+}
+
+body.dark .summary-card.balance {
+  background: linear-gradient(135deg, #1e3a8a, #6366f1);
+  color: #eef2ff;
+}
+
+@media (max-width: 900px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
+.add-transaction {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-transaction h3 {
+  margin-bottom: 6px;
+}
+
+.add-transaction input,
+.add-transaction select {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.15);
+  font-size: 14px;
+}
+
+.add-transaction button {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #a5b4fc, #818cf8);
+  font-weight: 600;
+}
+
+body.dark .add-transaction button {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+.card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px;
+  margin-bottom: 26px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+}
+
+body.dark .card {
+  background: #0f172a;
+}
+.card,
+.summary-card,
+.nifty-card {
+  height: auto !important;
+  min-height: unset !important;
+}
+
