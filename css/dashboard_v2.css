@@ -153,3 +153,13 @@ body.dark #transactionList li {
     grid-template-columns: 1fr;
   }
 }
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 260px !important;
+}
+
+.chart-card {
+  height: 300px;
+}
+

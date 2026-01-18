@@ -2,93 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="css/dashboard.css" />
+  <title>Expense Dashboard</title>
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f7ff;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .card p {
+      font-size: 22px;
+      margin: 10px 0 0;
+      font-weight: bold;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 260px !important;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .add-form input, .add-form select, .add-form button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .add-form button {
+      background: #bdb2ff;
+      border: none;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="top-bar">
-  <div>
-    <h2 id="greetingText"></h2>
-    <p id="greetingMsg"></p>
+  <h1 id="greeting"></h1>
+  <div class="subtitle">Track your money mindfully and watch your savings grow ✨</div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Total Income</h3>
+      <p id="income">₹0</p>
+    </div>
+    <div class="card">
+      <h3>Total Expense</h3>
+      <p id="expense">₹0</p>
+    </div>
+    <div class="card">
+      <h3>Savings</h3>
+      <p id="balance">₹0</p>
+    </div>
   </div>
 
-  <div class="top-actions">
-    <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+  <div class="layout">
+    <div class="box">
+      <h3>Expense Distribution</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="box">
+      <h3>Add Transaction</h3>
+      <div class="add-form">
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <input id="category" placeholder="Category" />
+        <input id="amount" type="number" placeholder="Amount" />
+        <button onclick="addTransaction()">Add</button>
+      </div>
+
+      <h3 style="margin-top:20px">Transactions</h3>
+      <ul id="list"></ul>
+    </div>
   </div>
-</header>
 
-<main class="container">
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  alert("Please login again");
+  location.href = "login.html";
+}
 
-  <!-- SUMMARY -->
-  <section class="summary">
-    <div class="summary-card income">
-      <p>Total Income</p>
-      <h3 id="totalIncome">₹0</h3>
-    </div>
+document.getElementById("greeting").innerText =
+  `Good Evening, ${user.name} 💜`;
 
-    <div class="summary-card expense">
-      <p>Total Expense</p>
-      <h3 id="totalExpense">₹0</h3>
-    </div>
+const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
+let pieChart;
 
-    <div class="summary-card balance">
-      <p>Savings</p>
-      <h3 id="balance">₹0</h3>
-    </div>
-  </section>
+async function loadData() {
+  const res = await fetch(`${API}/${user._id}`);
+  const data = await res.json();
 
-  <!-- ADD TRANSACTION -->
-  <section class="card">
-    <h3>Add Transaction</h3>
+  let income = 0, expense = 0;
+  const map = {};
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-    <select id="type">
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
+  data.forEach(t => {
+    if (t.type === "income") income += t.amount;
+    else expense += t.amount;
 
-    <select id="category">
-      <option value="">Select Category</option>
-      <option value="Rent">Rent</option>
-      <option value="Groceries">Groceries</option>
-      <option value="Transport">Transport</option>
-      <option value="Entertainment">Entertainment</option>
-      <option value="Hospital">Hospital</option>
-    </select>
+    if (t.type === "expense") {
+      map[t.category] = (map[t.category] || 0) + t.amount;
+    }
 
-    <input type="number" id="amount" placeholder="Amount" />
-    <input type="text" id="note" placeholder="Note (optional)" />
+    const li = document.createElement("li");
+    li.textContent = `${t.category} - ₹${t.amount}`;
+    list.appendChild(li);
+  });
 
-    <button onclick="addTransaction()">Add Transaction</button>
-  </section>
+  document.getElementById("income").innerText = `₹${income}`;
+  document.getElementById("expense").innerText = `₹${expense}`;
+  document.getElementById("balance").innerText = `₹${income - expense}`;
 
-  <!-- TRANSACTIONS -->
-  <section class="card">
-    <h3>Transactions</h3>
-    <ul id="transactionList"></ul>
-  </section>
+  renderPie(map);
+}
 
-  <!-- CHARTS -->
-  <section class="card">
-    <h3>Expense Distribution</h3>
-    <canvas id="pieChart"></canvas>
-  </section>
+function renderPie(map) {
+  if (pieChart) pieChart.destroy();
 
-  <section class="card">
-    <h3>Income vs Expense vs Savings</h3>
-    <canvas id="barChart"></canvas>
-  </section>
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(map),
+      datasets: [{
+        data: Object.values(map),
+        backgroundColor: [
+          "#ffd6a5",
+          "#fdffb6",
+          "#caffbf",
+          "#9bf6ff",
+          "#bdb2ff"
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
 
-  <section class="card">
-    <h3>Balance Trend</h3>
-    <canvas id="lineChart"></canvas>
-  </section>
+async function addTransaction() {
+  const type = type.value;
+  const category = category.value;
+  const amount = Number(amount.value);
 
-</main>
+  if (!amount || !category) return alert("Fill all fields");
 
-<script src="js/dashboard_v2.js"></script>
+  await fetch(`${API}/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: user._id, type, category, amount })
+  });
+
+  category.value = "";
+  amount.value = "";
+  loadData();
+}
+
+loadData();
+</script>
+
 </body>
 </html>
