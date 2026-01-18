@@ -11,7 +11,7 @@ if (!user || !user._id) {
 }
 
 /* =========================
-   API
+   API URL
 ========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
@@ -54,12 +54,12 @@ async function loadTransactions() {
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    transactions.forEach((t) => {
+    transactions.forEach(t => {
       if (t.type === "income") income += t.amount;
       else expense += t.amount;
 
       const li = document.createElement("li");
-      li.innerText = `${t.category} – ₹${t.amount}`;
+      li.innerHTML = `<span>${t.category} – ₹${t.amount}</span>`;
       list.appendChild(li);
     });
 
@@ -113,16 +113,21 @@ async function addTransaction() {
 }
 
 /* =========================
-   CHARTS (FIXED)
+   CHARTS (FIXED SIZE)
 ========================= */
 function renderCharts(transactions, income, expense) {
   const savings = income - expense;
 
-  /* ===== PIE CHART ===== */
+  /* FIXED HEIGHTS */
+  document.getElementById("pieChart").style.height = "230px";
+  document.getElementById("barChart").style.height = "260px";
+  document.getElementById("lineChart").style.height = "260px";
+
+  /* ===== PIE ===== */
   const expenseMap = {};
   transactions
-    .filter((t) => t.type === "expense")
-    .forEach((t) => {
+    .filter(t => t.type === "expense")
+    .forEach(t => {
       expenseMap[t.category] =
         (expenseMap[t.category] || 0) + t.amount;
     });
@@ -146,10 +151,13 @@ function renderCharts(transactions, income, expense) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "right" },
+      },
     },
   });
 
-  /* ===== BAR CHART ===== */
+  /* ===== BAR ===== */
   if (barChart) barChart.destroy();
   barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
@@ -159,6 +167,7 @@ function renderCharts(transactions, income, expense) {
         label: "₹ Amount",
         data: [income, expense, savings],
         backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
+        borderRadius: 6,
       }],
     },
     options: {
@@ -167,11 +176,11 @@ function renderCharts(transactions, income, expense) {
     },
   });
 
-  /* ===== LINE CHART ===== */
+  /* ===== LINE ===== */
   let running = 0;
   const trend = [];
 
-  transactions.forEach((t) => {
+  transactions.forEach(t => {
     running += t.type === "income" ? t.amount : -t.amount;
     trend.push(running);
   });
@@ -185,7 +194,9 @@ function renderCharts(transactions, income, expense) {
         label: "Balance",
         data: trend,
         borderColor: "#bfa7f3",
-        tension: 0.3,
+        backgroundColor: "rgba(191,167,243,0.2)",
+        fill: true,
+        tension: 0.35,
       }],
     },
     options: {
@@ -200,7 +211,6 @@ function renderCharts(transactions, income, expense) {
 ========================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
-  loadTransactions();
 }
 
 /* =========================
