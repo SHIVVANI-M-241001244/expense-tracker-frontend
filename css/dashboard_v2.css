@@ -29,32 +29,23 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
 }
 
-/* ================= TOP BAR ================= */
+/* TOP BAR */
 .top-bar {
   display: flex;
   justify-content: space-between;
   padding: 30px 40px;
 }
 
-.top-bar h2 {
-  font-weight: 600;
-}
-
-.top-bar p {
-  color: var(--muted);
-}
-
-/* ================= CONTAINER ================= */
+/* CONTAINER */
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 10px 30px 40px;
+  padding: 0 30px 40px;
 }
 
-/* ================= SUMMARY ================= */
+/* SUMMARY */
 .summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -69,20 +60,11 @@ body {
   text-align: center;
 }
 
-.summary-card h4 {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.summary-card h2 {
-  margin-top: 8px;
-}
-
 .income { background: var(--income); }
 .expense { background: var(--expense); }
 .balance { background: var(--savings); }
 
-/* ================= CARD ================= */
+/* CARD */
 .card {
   background: var(--card);
   border-radius: 22px;
@@ -91,15 +73,13 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* ================= ADD TRANSACTION ================= */
+/* FORM */
 input, select {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border-radius: 14px;
   border: 1px solid #ddd;
-  background: transparent;
-  color: var(--text);
 }
 
 button {
@@ -109,57 +89,31 @@ button {
   padding: 12px;
   border-radius: 14px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-/* ================= TRANSACTIONS ================= */
+/* TRANSACTIONS */
 #transactionList li {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
+  padding: 12px;
   margin-bottom: 10px;
   border-radius: 14px;
-  background: rgba(0,0,0,0.03);
-  font-size: 14px;
+  background: rgba(0,0,0,0.04);
 }
 
-body.dark #transactionList li {
-  background: rgba(255,255,255,0.06);
+/* CHARTS – FIXED */
+.card canvas {
+  max-height: 260px;
 }
 
-#transactionList button {
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 8px;
-}
-
-/* ================= CHARTS ================= */
-/* Charts size control */
 #pieChart {
-  height: 320px !important;   /* 👈 slightly bigger */
+  max-height: 300px;
 }
 
-#barChart,
-#lineChart {
-  height: 280px !important;   /* keep others same */
-}
-
-/* ================= RESPONSIVE ================= */
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .summary {
     grid-template-columns: 1fr;
   }
 }
-canvas {
-  display: block;
-  width: 100% !important;
-  height: 260px !important;
-}
-
-.chart-card {
-  height: 300px;
-}
-
