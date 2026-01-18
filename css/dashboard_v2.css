@@ -445,4 +445,15 @@ body.dark button {
 body.dark canvas {
   filter: brightness(1.05);
 }
+/* Greeting polish */
+.top-bar h2 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.top-bar p {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0;
+}
 

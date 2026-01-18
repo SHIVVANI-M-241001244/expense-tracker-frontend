@@ -27,17 +27,22 @@ let lineChart = null;
 ========================= */
 const greetingText = document.getElementById("greetingText");
 const greetingMsg = document.getElementById("greetingMsg");
-
-if (greetingText) {
+if (greetingText && greetingMsg) {
   const hour = new Date().getHours();
-  const greet =
-    hour < 12 ? "Good Morning" :
-    hour < 17 ? "Good Afternoon" :
-    "Good Evening";
 
-  greetingText.innerText = `${greet}, ${user.name} 💜`;
-  greetingMsg.innerText =
-    "Track your money mindfully and watch your savings grow ✨";
+  let greet = "Good Evening";
+  let msg = "Reflect on your spending and plan better 🌙";
+
+  if (hour < 12) {
+    greet = "Good Morning";
+    msg = "Start your day with mindful spending ☀️";
+  } else if (hour < 17) {
+    greet = "Good Afternoon";
+    msg = "Keep tracking — every rupee counts 💫";
+  }
+
+  greetingText.innerText = `${greet}, ${user.name}`;
+  greetingMsg.innerText = msg;
 }
 
 /* =========================
