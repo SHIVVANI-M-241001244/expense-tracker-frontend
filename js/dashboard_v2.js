@@ -209,23 +209,62 @@ async function addTransaction() {
   loadTransactions();
 }
 
-async function editTransaction(id, cat, amt, type) {
-  const newAmt = prompt("Edit amount:", amt);
-  if (!newAmt) return;
+/* =========================
+   EDIT TRANSACTION (FIXED)
+========================= */
+async function editTransaction(id, category, amount, type) {
+  const newAmount = prompt("Edit amount:", amount);
+  if (!newAmount || isNaN(newAmount)) return;
 
-  await fetch(`${API}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount: Number(newAmt), category: cat, type })
-  });
+  try {
+    const res = await fetch(`${API}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: Number(newAmount),
+        category,
+        type,
+        userId: user._id
+      })
+    });
 
-  loadTransactions();
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("EDIT FAILED:", err);
+      alert("Edit failed. Check backend route.");
+      return;
+    }
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Edit error");
+  }
 }
 
+/* =========================
+   DELETE TRANSACTION (FIXED)
+========================= */
 async function deleteTransaction(id) {
-  if (!confirm("Delete transaction?")) return;
-  await fetch(`${API}/${id}`, { method: "DELETE" });
-  loadTransactions();
+  if (!confirm("Delete this transaction?")) return;
+
+  try {
+    const res = await fetch(`${API}/${id}`, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("DELETE FAILED:", err);
+      alert("Delete failed. Check backend route.");
+      return;
+    }
+
+    loadTransactions();
+  } catch (err) {
+    console.error(err);
+    alert("Delete error");
+  }
 }
 
 /* =========================
