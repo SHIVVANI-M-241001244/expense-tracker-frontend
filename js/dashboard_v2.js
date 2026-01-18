@@ -55,24 +55,25 @@ async function loadTransactions() {
     list.innerHTML = "";
 
     transactions.forEach((t) => {
-      console.log("TRANSACTION OBJECT 👉", t);
+  if (t.type === "income") income += t.amount;
+  else expense += t.amount;
 
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+  // Use the MongoDB _id specifically
+  const txId = t._id; 
 
-      const txId = t._id || t.id; // ✅ CRITICAL FIX
+  const li = document.createElement("li");
+  li.className = "transaction-item"; // Good for styling later
+  li.innerHTML = `
+    <span>${t.category} – ₹${t.amount}</span>
+    <div>
+      <button onclick="editTransaction('${txId}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+      <button onclick="deleteTransaction('${txId}')">🗑️</button>
+    </div>
+  `;
+  list.appendChild(li);
+});
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span>${t.category} – ₹${t.amount}</span>
-        <div>
-          <button onclick="editTransaction('${txId}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
-          <button onclick="deleteTransaction('${txId}')">🗑️</button>
-        </div>
-      `;
-      list.appendChild(li);
-    });
-
+   
     document.getElementById("totalIncome").innerText = `₹${income}`;
     document.getElementById("totalExpense").innerText = `₹${expense}`;
     document.getElementById("balance").innerText = `₹${income - expense}`;
@@ -306,3 +307,10 @@ function logout() {
    INIT
 ========================= */
 loadTransactions();
+// This explicitly attaches your functions to the window object
+window.addTransaction = addTransaction;
+window.editTransaction = editTransaction;
+window.deleteTransaction = deleteTransaction;
+window.toggleTheme = toggleTheme;
+window.logout = logout;
+
