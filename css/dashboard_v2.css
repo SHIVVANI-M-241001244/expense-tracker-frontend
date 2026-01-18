@@ -298,3 +298,89 @@ body.dark .delete-btn {
   background: #7f1d1d;
   color: #fee2e2;
 }
+/* ========== DRIBBBLE-STYLE SOFT UI ========== */
+
+body {
+  background: linear-gradient(135deg, #f8f9ff, #f1f5ff);
+}
+
+/* Main cards */
+.card,
+.summary-card,
+.nifty-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 28px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+/* Dark mode */
+body.dark {
+  background: linear-gradient(135deg, #020617, #020617);
+}
+
+body.dark .card,
+body.dark .summary-card,
+body.dark .nifty-card {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+/* Section titles */
+.card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.summary-card {
+  padding: 28px;
+  text-align: left;
+}
+
+.summary-card p {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.summary-card h3 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+/* Soft gradients */
+.summary-card.income {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #065f46;
+}
+
+.summary-card.expense {
+  background: linear-gradient(135deg, #fff1f2, #fecdd3);
+  color: #7f1d1d;
+}
+
+.summary-card.balance {
+  background: linear-gradient(135deg, #eef2ff, #c7d2fe);
+  color: #1e3a8a;
+}
+
+/* Dark mode cards */
+body.dark .summary-card.income {
+  background: linear-gradient(135deg, #064e3b, #16a34a);
+  color: #ecfdf5;
+}
+
+body.dark .summary-card.expense {
+  background: linear-gradient(135deg, #7f1d1d, #dc2626);
+  color: #fff1f2;
+}
+
+body.dark .summary-card.balance {
+  background: linear-gradient(135deg, #1e3a8a, #6366f1);
+  color: #eef2ff;
+}
+#pieChart {
+  max-width: 320px;
+  max-height: 320px;
+  margin: 0 auto;
+}
