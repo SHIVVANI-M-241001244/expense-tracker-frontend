@@ -10,7 +10,7 @@
 
 <body>
 
-<!-- ================= TOP BAR ================= -->
+<!-- ===== TOP BAR ===== -->
 <header class="top-bar">
   <div>
     <h2 id="greetingText"></h2>
@@ -25,7 +25,7 @@
 
 <main class="container">
 
-  <!-- ================= SUMMARY ================= -->
+  <!-- ===== SUMMARY ===== -->
   <section class="summary">
     <div class="summary-card income">
       <p>Total Income</p>
@@ -43,7 +43,7 @@
     </div>
   </section>
 
-  <!-- ================= ADD TRANSACTION ================= -->
+  <!-- ===== ADD TRANSACTION ===== -->
   <section class="card">
     <h3>Add Transaction</h3>
 
@@ -67,33 +67,30 @@
     <button onclick="addTransaction()">Add Transaction</button>
   </section>
 
-  <!-- ================= TRANSACTIONS ================= -->
+  <!-- ===== TRANSACTIONS ===== -->
   <section class="card">
     <h3>Transactions</h3>
     <ul id="transactionList"></ul>
   </section>
 
-  <!-- ================= CHARTS ================= -->
+  <!-- ===== CHARTS ===== -->
   <section class="card">
     <h3>Expense Distribution</h3>
-    <canvas id="pieChart"></canvas>
+    <canvas id="expensePie"></canvas>
   </section>
 
   <section class="card">
     <h3>Income vs Expense vs Savings</h3>
-    <canvas id="barChart"></canvas>
+    <canvas id="summaryBar"></canvas>
   </section>
 
   <section class="card">
     <h3>Balance Trend</h3>
-    <canvas id="lineChart"></canvas>
+    <canvas id="trendChart"></canvas>
   </section>
 
 </main>
 
-<!-- ================= SCRIPTS ================= -->
 <script src="js/dashboard_v2.js"></script>
-<script src="js/chart.js"></script>
-
 </body>
 </html>

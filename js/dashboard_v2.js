@@ -1,7 +1,7 @@
 console.log("DASHBOARD JS LOADED");
 
 /* =========================
-   AUTH
+   AUTH CHECK
 ========================= */
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -10,6 +10,9 @@ if (!user || !user._id) {
   window.location.href = "login.html";
 }
 
+/* =========================
+   API
+========================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
 /* =========================
@@ -18,28 +21,40 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 const greetingText = document.getElementById("greetingText");
 const greetingMsg = document.getElementById("greetingMsg");
 
-const hour = new Date().getHours();
-let greet = "";
-let msg = "";
+if (greetingText && greetingMsg) {
+  const hour = new Date().getHours();
 
-if (hour < 12) {
-  greet = "Good Morning";
-  msg = "Start your day by tracking your expenses mindfully ✨";
-} else if (hour < 17) {
-  greet = "Good Afternoon";
-  msg = "A small check today keeps your finances healthy 💜";
-} else {
-  greet = "Good Evening";
-  msg = "Review your spending and save smarter 🌙";
+  const greet =
+    hour < 12 ? "Good Morning" :
+    hour < 17 ? "Good Afternoon" :
+    "Good Evening";
+
+  greetingText.innerText = `${greet}, ${user.name} 💜`;
+  greetingMsg.innerText =
+    "Track your expenses, grow your savings, and stay in control ✨";
 }
 
-greetingText.innerText = `${greet}, ${user.name}`;
-greetingMsg.innerText = msg;
+/* =========================
+   THEME TOGGLE
+========================= */
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
 
 /* =========================
-   GLOBAL STATE
+   LOGOUT
 ========================= */
-let allTransactions = [];
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+/* =========================
+   CHART VARIABLES
+========================= */
+let expensePieChart = null;
+let summaryBarChart = null;
+let trendLineChart = null;
 
 /* =========================
    LOAD TRANSACTIONS
@@ -47,27 +62,39 @@ let allTransactions = [];
 async function loadTransactions() {
   try {
     const res = await fetch(`${API}/${user._id}`);
-    if (!res.ok) throw new Error("Fetch failed");
-
-    allTransactions = await res.json();
+    const transactions = await res.json();
 
     let income = 0;
     let expense = 0;
+    let balanceTrend = [];
+    let expenseCategories = {};
 
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    allTransactions.forEach((t) => {
-      if (t.type === "income") income += t.amount;
-      else expense += t.amount;
+    transactions.forEach((t) => {
+      if (t.type === "income") {
+        income += t.amount;
+      } else {
+        expense += t.amount;
+        expenseCategories[t.category] =
+          (expenseCategories[t.category] || 0) + t.amount;
+      }
+
+      balanceTrend.push(income - expense);
 
       const li = document.createElement("li");
       li.innerHTML = `
         <span>${t.category} - ₹${t.amount}</span>
-        <div>
-          <button onclick="editTransaction('${t._id}', '${t.category}', ${t.amount}, '${t.type}')">✏️</button>
+        <span>
+          <button onclick="editTransaction(
+            '${t._id}',
+            '${t.category}',
+            ${t.amount},
+            '${t.type}'
+          )">✏️</button>
           <button onclick="deleteTransaction('${t._id}')">🗑️</button>
-        </div>
+        </span>
       `;
       list.appendChild(li);
     });
@@ -76,10 +103,9 @@ async function loadTransactions() {
     document.getElementById("totalExpense").innerText = `₹${expense}`;
     document.getElementById("balance").innerText = `₹${income - expense}`;
 
-    renderCharts(allTransactions, income, expense);
+    renderCharts(expenseCategories, income, expense, balanceTrend);
   } catch (err) {
     console.error(err);
-    alert("Failed to load transactions");
   }
 }
 
@@ -93,7 +119,7 @@ async function addTransaction() {
   const note = document.getElementById("note").value;
 
   if (!amount || (type === "expense" && !category)) {
-    alert("Fill all required fields");
+    alert("Please fill all required fields");
     return;
   }
 
@@ -109,70 +135,115 @@ async function addTransaction() {
     }),
   });
 
+  document.getElementById("amount").value = "";
+  document.getElementById("note").value = "";
+  document.getElementById("category").value = "";
+
   loadTransactions();
 }
 
 /* =========================
-   EDIT (FIXED)
+   EDIT TRANSACTION
 ========================= */
 async function editTransaction(id, oldCategory, oldAmount, type) {
-  console.log("EDIT ID:", id);
-
   const newAmount = prompt("Edit amount:", oldAmount);
   if (!newAmount) return;
 
-  const newCategory =
-    type === "income" ? "Income" : prompt("Edit category:", oldCategory);
-
-  const res = await fetch(`${API}/${id}`, {
+  await fetch(`${API}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      category: newCategory,
+      category: oldCategory,
       amount: Number(newAmount),
       type,
     }),
   });
 
-  if (!res.ok) {
-    alert("Update failed");
-    return;
-  }
-
   loadTransactions();
 }
 
 /* =========================
-   DELETE (FIXED)
+   DELETE TRANSACTION
 ========================= */
 async function deleteTransaction(id) {
-  console.log("DELETE ID:", id);
-
   if (!confirm("Delete this transaction?")) return;
 
-  const res = await fetch(`${API}/${id}`, { method: "DELETE" });
-
-  if (!res.ok) {
-    alert("Delete failed");
-    return;
-  }
-
+  await fetch(`${API}/${id}`, { method: "DELETE" });
   loadTransactions();
 }
 
 /* =========================
-   DARK MODE
+   CHARTS
 ========================= */
-function toggleTheme() {
-  document.body.classList.toggle("dark");
+function renderCharts(categories, income, expense, trend) {
+  expensePieChart?.destroy();
+  summaryBarChart?.destroy();
+  trendLineChart?.destroy();
+
+  /* EXPENSE PIE */
+  expensePieChart = new Chart(
+    document.getElementById("expensePie"),
+    {
+      type: "pie",
+      data: {
+        labels: Object.keys(categories),
+        datasets: [
+          {
+            data: Object.values(categories),
+            backgroundColor: [
+              "#ffb4b4",
+              "#ffd6a5",
+              "#caffbf",
+              "#bdb2ff",
+              "#ffc6ff",
+            ],
+          },
+        ],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    }
+  );
+
+  /* SUMMARY BAR */
+  summaryBarChart = new Chart(
+    document.getElementById("summaryBar"),
+    {
+      type: "bar",
+      data: {
+        labels: ["Income", "Expense", "Savings"],
+        datasets: [
+          {
+            data: [income, expense, income - expense],
+            backgroundColor: ["#caffbf", "#ffb4b4", "#bdb2ff"],
+          },
+        ],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    }
+  );
+
+  /* TREND LINE */
+  trendLineChart = new Chart(
+    document.getElementById("trendChart"),
+    {
+      type: "line",
+      data: {
+        labels: trend.map((_, i) => i + 1),
+        datasets: [
+          {
+            data: trend,
+            borderColor: "#b8b5ff",
+            fill: false,
+            tension: 0.3,
+          },
+        ],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    }
+  );
 }
 
 /* =========================
-   LOGOUT
+   INIT
 ========================= */
-function logout() {
-  localStorage.clear();
-  window.location.href = "login.html";
-}
-
 loadTransactions();
