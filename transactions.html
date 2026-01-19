@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transactions</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/transactions.css" />
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <h2>All Transactions</h2>
+    <button class="back-btn" onclick="goBack()">← Dashboard</button>
+  </header>
+
+  <!-- SEARCH -->
+  <div class="search-box">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by category or amount"
+      oninput="searchTransactions()"
+    />
+  </div>
+
+  <!-- TRANSACTIONS LIST -->
+  <ul id="transactionList"></ul>
+
+  <!-- JS (VERY IMPORTANT: at bottom) -->
+  <script src="js/transactions.js"></script>
+
+</body>
+</html>

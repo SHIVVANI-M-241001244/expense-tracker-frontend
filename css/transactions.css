@@ -1,12 +1,21 @@
 body {
-  background: #f6f7fb;
+  margin: 0;
   font-family: Poppins, sans-serif;
+  background: #f6f7fb;
 }
 
 .top-bar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 20px 30px;
+}
+
+.back-btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
 }
 
 .search-box {
@@ -18,7 +27,6 @@ body {
   padding: 14px;
   border-radius: 16px;
   border: none;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 #transactionList {
@@ -28,7 +36,7 @@ body {
 
 #transactionList li {
   background: white;
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 16px;
   margin-bottom: 12px;
   display: flex;
