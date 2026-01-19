@@ -28,29 +28,23 @@ async function loadTransactions() {
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-   // LAST transaction only
-
   data.forEach(t => {
-  if (t.type === "income") income += t.amount;
-  else expense += t.amount;
-});
+    if (t.type === "income") income += t.amount;
+    else expense += t.amount;
+  });
+
+  /* SHOW LAST TRANSACTION ONLY */
   if (data.length > 0) {
-  const t = data[data.length - 1];
-
-  const li = document.createElement("li");
-  li.innerHTML = `
-    <span>
-      ${t.type === "income" ? "💰" : "💸"}
-      ${t.category} – ₹${t.amount}
-    </span>
-    <div class="tx-actions">
-      <button onclick="editTransaction('${t._id}', ${t.amount})">✏️</button>
-      <button onclick="deleteTransaction('${t._id}')">🗑</button>
-    </div>
-  `;
-  list.appendChild(li);
-}
-
+    const t = data[data.length - 1];
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>
+        ${t.type === "income" ? "💰 Income" : "💸 Expense"} —
+        ${t.category} — ₹${t.amount}
+      </span>
+    `;
+    list.appendChild(li);
+  }
 
   document.getElementById("totalIncome").innerText = `₹${income}`;
   document.getElementById("totalExpense").innerText = `₹${expense}`;
@@ -76,164 +70,73 @@ async function addTransaction() {
   loadTransactions();
 }
 
-/* EDIT */
-async function editTransaction(id, oldAmount) {
-  const val = prompt("New amount", oldAmount);
-  if (!val) return;
-  await fetch(`${API}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount: Number(val) })
-  });
-  loadTransactions();
-}
-
-/* DELETE */
-async function deleteTransaction(id) {
-  if (!confirm("Delete transaction?")) return;
-  await fetch(`${API}/${id}`, { method: "DELETE" });
-  loadTransactions();
-}
+/* CHARTS */
 function renderCharts(data, income, expense) {
   const savings = income - expense;
 
-  // Destroy old charts safely
   if (pieChart) pieChart.destroy();
   if (barChart) barChart.destroy();
   if (lineChart) lineChart.destroy();
 
-  /* ===== EXPENSE MAP ===== */
   const expenseMap = {};
-  data
-    .filter(t => t.type === "expense")
-    .forEach(t => {
-      expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
-    });
+  data.filter(t => t.type === "expense").forEach(t => {
+    expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
+  });
 
   const isDark = document.body.classList.contains("dark");
-  const textColor = isDark ? "#f8fafc" : "#1f2937";
-  const gridColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
+  const textColor = isDark ? "#f9fafb" : "#1f2937";
+  const gridColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)";
 
-  /* ===== PIE CHART ===== */
-  const isDark = document.body.classList.contains("dark");
-
-pieChart = new Chart(document.getElementById("pieChart"), {
-  type: "pie",
-  data: {
-    labels: Object.keys(expenseMap),
-    datasets: [{
-      data: Object.values(expenseMap),
-      backgroundColor: [
-        "#fda4af",  // pink
-        "#93c5fd",  // blue
-        "#c4b5fd",  // violet
-        "#86efac",  // green
-        "#fde68a"   // yellow
-      ],
-      borderWidth: 2,
-      borderColor: isDark ? "#020617" : "#ffffff"
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false, // 🔥 allows bigger size
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          color: isDark ? "#f8fafc" : "#020617", // 🔥 BRIGHT TEXT
-          font: {
-            size: 14,
-            weight: "bold"
-          },
-          padding: 20
+  /* PIE */
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(expenseMap),
+      datasets: [{
+        data: Object.values(expenseMap),
+        backgroundColor: ["#fda4af", "#93c5fd", "#c4b5fd", "#86efac", "#fde68a"],
+        borderWidth: 2,
+        borderColor: isDark ? "#020617" : "#ffffff"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            color: textColor,
+            font: { size: 14, weight: "bold" }
+          }
         }
-      },
-      tooltip: {
-        bodyColor: "#f8fafc",
-        titleColor: "#f8fafc"
       }
     }
-  }
-});
+  });
 
-  if (pieCanvas) {
-    pieChart = new Chart(pieCanvas.getContext("2d"), {
-      type: "pie",
-      data: {
-        labels: Object.keys(expenseMap),
-        datasets: [{
-          data: Object.values(expenseMap),
-          backgroundColor: [
-            "#fde2e4",
-            "#e0f2fe",
-            "#ede9fe",
-            "#dcfce7",
-            "#fef3c7"
-          ],
-          borderWidth: 1
-        }]
+  /* BAR */
+  barChart = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense", "Savings"],
+      datasets: [{
+        data: [income, expense, savings],
+        backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
+        borderRadius: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { display: false } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: textColor,
-              font: {
-                size: 14,
-                weight: "600"
-              },
-              padding: 16
-            }
-          }
-        }
-      }
-    });
-  }
+      plugins: { legend: { display: false } }
+    }
+  });
 
-  /* ===== BAR CHART ===== */
-  const barCanvas = document.getElementById("barChart");
-  if (barCanvas) {
-    barChart = new Chart(barCanvas.getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["Income", "Expense", "Savings"],
-        datasets: [{
-          data: [income, expense, savings],
-          backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
-          borderRadius: 12
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { display: false }
-          },
-          y: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { color: gridColor }
-          }
-        },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  }
-
-  /* ===== LINE CHART ===== */
+  /* LINE */
   let running = 0;
   const trend = [];
   data.forEach(t => {
@@ -241,61 +144,50 @@ pieChart = new Chart(document.getElementById("pieChart"), {
     trend.push(running);
   });
 
-  const lineCanvas = document.getElementById("lineChart");
-  if (lineCanvas) {
-    lineChart = new Chart(lineCanvas.getContext("2d"), {
-      type: "line",
-      data: {
-        labels: trend.map((_, i) => `T${i + 1}`),
-        datasets: [{
-          data: trend,
-          borderColor: "#6366f1",
-          backgroundColor: "rgba(99,102,241,0.25)",
-          borderWidth: 3,
-          pointRadius: 4,
-          tension: 0.35,
-          fill: true
-        }]
+  lineChart = new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: trend.map((_, i) => `T${i + 1}`),
+      datasets: [{
+        data: trend,
+        borderColor: "#6366f1",
+        backgroundColor: "rgba(99,102,241,0.25)",
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { display: false } },
+        y: { ticks: { color: textColor }, grid: { color: gridColor } }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { display: false }
-          },
-          y: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { color: gridColor }
-          }
-        },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  }
+      plugins: { legend: { display: false } }
+    }
+  });
 }
+
+/* BUDGET */
 function updateBudgetStatus(expense) {
   const budget = Number(localStorage.getItem("budget"));
   if (!budget) return;
 
   const left = budget - expense;
-  const el = document.getElementById("budgetStatus");
-  if (!el) return;
-
-  el.innerText =
-    left < 0
-      ? `⚠ Exceeded by ₹${Math.abs(left)}`
-      : `₹${left} left`;
+  document.getElementById("budgetStatus").innerText =
+    left < 0 ? `⚠ Exceeded by ₹${Math.abs(left)}` : `₹${left} left`;
 }
+
+/* THEME */
 function toggleTheme() {
   document.body.classList.toggle("dark");
 }
+
+/* LOGOUT */
+function logout() {
+  localStorage.clear();
+  location.href = "login.html";
+}
+document.addEventListener("DOMContentLoaded", () => {
+  loadTransactions();
+});
