@@ -515,3 +515,14 @@ body.dark .card {
   min-height: unset !important;
 }
 
+/* ===== ADD TRANSACTION VERTICAL ===== */
+.add-transaction select,
+.add-transaction input,
+.add-transaction button {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.add-transaction button {
+  margin-top: 16px;
+}
