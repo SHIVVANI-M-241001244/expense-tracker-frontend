@@ -1,30 +1,35 @@
 console.log("DASHBOARD V2 LOADED");
 
-/* AUTH */
+/* ================= AUTH ================= */
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) {
   alert("Login again");
   location.href = "login.html";
 }
 
-/* API */
+/* ================= API ================= */
 const API = "https://shivvani-m-expense-backend.onrender.com/api/transactions";
 
-let pieChart, barChart, lineChart;
+/* ================= GLOBAL CHARTS ================= */
+let pieChart = null;
+let barChart = null;
+let lineChart = null;
 
-/* GREETING */
+/* ================= GREETING ================= */
 const hour = new Date().getHours();
 document.getElementById("greetingText").innerText =
   hour < 12 ? `Good Morning, ${user.name}` :
   hour < 17 ? `Good Afternoon, ${user.name}` :
   `Good Evening, ${user.name}`;
 
-/* LOAD TRANSACTIONS */
+/* ================= LOAD TRANSACTIONS ================= */
 async function loadTransactions() {
   const res = await fetch(`${API}/${user._id}`);
   const data = await res.json();
 
-  let income = 0, expense = 0;
+  let income = 0;
+  let expense = 0;
+
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
@@ -33,7 +38,7 @@ async function loadTransactions() {
     else expense += t.amount;
   });
 
-  /* SHOW LAST TRANSACTION ONLY */
+  /* LAST TRANSACTION ONLY */
   if (data.length > 0) {
     const t = data[data.length - 1];
     const li = document.createElement("li");
@@ -54,7 +59,7 @@ async function loadTransactions() {
   updateBudgetStatus(expense);
 }
 
-/* ADD */
+/* ================= ADD ================= */
 async function addTransaction() {
   await fetch(`${API}/add`, {
     method: "POST",
@@ -66,11 +71,12 @@ async function addTransaction() {
       amount: Number(amount.value)
     })
   });
+
   amount.value = "";
   loadTransactions();
 }
 
-/* CHARTS */
+/* ================= CHARTS ================= */
 function renderCharts(data, income, expense) {
   const savings = income - expense;
 
@@ -78,59 +84,49 @@ function renderCharts(data, income, expense) {
   if (barChart) barChart.destroy();
   if (lineChart) lineChart.destroy();
 
+  const isDark = document.body.classList.contains("dark");
+  const textColor = isDark ? "#f8fafc" : "#020617";
+  const gridColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
+
+  /* ===== PIE ===== */
   const expenseMap = {};
   data.filter(t => t.type === "expense").forEach(t => {
     expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
   });
 
-  const isDark = document.body.classList.contains("dark");
-const pieTextColor = isDark ? "#f8fafc" : "#020617";
-
-pieChart = new Chart(document.getElementById("pieChart"), {
-  type: "pie",
-  data: {
-    labels: Object.keys(expenseMap),
-    datasets: [{
-      data: Object.values(expenseMap),
-      backgroundColor: [
-        "#fda4af",
-        "#93c5fd",
-        "#c4b5fd",
-        "#86efac",
-        "#fde68a"
-      ],
-      borderWidth: 2,
-      borderColor: isDark ? "#020617" : "#ffffff"
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          color: pieTextColor,   // ✅ WORKS IN BOTH THEMES
-          font: {
-            size: 15,
-            weight: "bold"
-          },
-          padding: 18
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: Object.keys(expenseMap),
+      datasets: [{
+        data: Object.values(expenseMap),
+        backgroundColor: [
+          "#fda4af",
+          "#93c5fd",
+          "#c4b5fd",
+          "#86efac",
+          "#fde68a"
+        ],
+        borderWidth: 2,
+        borderColor: isDark ? "#020617" : "#ffffff"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            color: textColor,
+            font: { size: 14, weight: "600" }
+          }
         }
-      },
-      tooltip: {
-        backgroundColor: isDark ? "#020617" : "#ffffff",
-        titleColor: pieTextColor,
-        bodyColor: pieTextColor,
-        borderColor: isDark ? "#475569" : "#e5e7eb",
-        borderWidth: 1
       }
     }
-  }
-});
-       
+  });
 
-  /* BAR */
+  /* ===== BAR ===== */
   barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
@@ -138,7 +134,7 @@ pieChart = new Chart(document.getElementById("pieChart"), {
       datasets: [{
         data: [income, expense, savings],
         backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
-        borderRadius: 10
+        borderRadius: 12
       }]
     },
     options: {
@@ -152,7 +148,7 @@ pieChart = new Chart(document.getElementById("pieChart"), {
     }
   });
 
-  /* LINE */
+  /* ===== LINE ===== */
   let running = 0;
   const trend = [];
   data.forEach(t => {
@@ -184,7 +180,7 @@ pieChart = new Chart(document.getElementById("pieChart"), {
   });
 }
 
-/* BUDGET */
+/* ================= BUDGET ================= */
 function updateBudgetStatus(expense) {
   const budget = Number(localStorage.getItem("budget"));
   if (!budget) return;
@@ -194,16 +190,17 @@ function updateBudgetStatus(expense) {
     left < 0 ? `⚠ Exceeded by ₹${Math.abs(left)}` : `₹${left} left`;
 }
 
-/* THEME */
+/* ================= THEME ================= */
 function toggleTheme() {
   document.body.classList.toggle("dark");
+  loadTransactions(); // re-render charts with new colors
 }
 
-/* LOGOUT */
+/* ================= LOGOUT ================= */
 function logout() {
   localStorage.clear();
   location.href = "login.html";
 }
-document.addEventListener("DOMContentLoaded", () => {
-  loadTransactions();
-});
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", loadTransactions);
