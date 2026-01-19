@@ -104,131 +104,87 @@ function renderCharts(data, income, expense) {
   const textColor = isDark ? "#f8fafc" : "#1f2937";
   const gridColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
 
-  /* ===== PIE CHART ===== */
   const pieCanvas = document.getElementById("pieChart");
-  if (pieCanvas) {
-    pieChart = new Chart(pieCanvas.getContext("2d"), {
-      type: "pie",
-      data: {
-        labels: Object.keys(expenseMap),
-        datasets: [{
-          data: Object.values(expenseMap),
-          backgroundColor: [
-            "#fde2e4",
-            "#e0f2fe",
-            "#ede9fe",
-            "#dcfce7",
-            "#fef3c7"
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: textColor,
-              font: {
-                size: 14,
-                weight: "600"
-              },
-              padding: 16
-            }
+if (pieCanvas) {
+  const ctx = pieCanvas.getContext("2d");
+  pieChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: Object.keys(expenseMap),
+      datasets: [{
+        data: Object.values(expenseMap),
+        backgroundColor: ["#fde2e4", "#e0f2fe", "#ede9fe", "#dcfce7"]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { size: 14, weight: "bold" }
           }
         }
       }
-    });
-  }
-
+    }
+  });
+}
   /* ===== BAR CHART ===== */
-  const barCanvas = document.getElementById("barChart");
-  if (barCanvas) {
-    barChart = new Chart(barCanvas.getContext("2d"), {
-      type: "bar",
-      data: {
-        labels: ["Income", "Expense", "Savings"],
-        datasets: [{
-          data: [income, expense, savings],
-          backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"],
-          borderRadius: 12
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { display: false }
-          },
-          y: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { color: gridColor }
-          }
-        },
-        plugins: {
-          legend: { display: false }
-        }
+ const barCanvas = document.getElementById("barChart");
+if (barCanvas) {
+  const ctx = barCanvas.getContext("2d");
+  barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Income", "Expense", "Savings"],
+      datasets: [{
+        data: [income, expense, savings],
+        backgroundColor: ["#86efac", "#fca5a5", "#a5b4fc"]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: textColor, font: { weight: "bold" } } },
+        y: { ticks: { color: textColor, font: { weight: "bold" } } }
       }
-    });
-  }
+    }
+  });
+}
+
 
   /* ===== LINE CHART ===== */
-  let running = 0;
-  const trend = [];
-  data.forEach(t => {
-    running += t.type === "income" ? t.amount : -t.amount;
-    trend.push(running);
-  });
-
   const lineCanvas = document.getElementById("lineChart");
-  if (lineCanvas) {
-    lineChart = new Chart(lineCanvas.getContext("2d"), {
-      type: "line",
-      data: {
-        labels: trend.map((_, i) => `T${i + 1}`),
-        datasets: [{
-          data: trend,
-          borderColor: "#6366f1",
-          backgroundColor: "rgba(99,102,241,0.25)",
-          borderWidth: 3,
-          pointRadius: 4,
-          tension: 0.35,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { display: false }
-          },
-          y: {
-            ticks: {
-              color: textColor,
-              font: { weight: "600" }
-            },
-            grid: { color: gridColor }
+if (lineCanvas) {
+  const ctx = lineCanvas.getContext("2d");
+  lineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: trend.map((_, i) => `T${i + 1}`),
+      datasets: [{
+        data: trend,
+        borderColor: "#6366f1",
+        borderWidth: 3,
+        pointRadius: 4,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: textColor,
+            font: { weight: "bold" }
           }
-        },
-        plugins: {
-          legend: { display: false }
         }
+      },
+      scales: {
+        x: { ticks: { color: textColor, font: { weight: "bold" } } },
+        y: { ticks: { color: textColor, font: { weight: "bold" } } }
       }
-    });
-  }
+    }
+  });
 }
+
