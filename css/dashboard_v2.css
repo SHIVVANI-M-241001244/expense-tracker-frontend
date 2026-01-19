@@ -679,3 +679,14 @@ body.dark .balance {
   height: 320 px;
 
 }
+/* ===== FIX CHART VISIBILITY ===== */
+
+.card canvas {
+  width: 100% !important;
+  height: 320px !important; /* 🔥 THIS is the key */
+}
+
+/* Slightly bigger pie chart */
+#pieChart {
+  height: 360px !important;
+}
