@@ -84,8 +84,7 @@ function renderCharts(data, income, expense) {
   });
 
   const isDark = document.body.classList.contains("dark");
-  const textColor = isDark ? "#f9fafb" : "#1f2937";
-  const gridColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)";
+const pieTextColor = isDark ? "#f8fafc" : "#020617";
 
 pieChart = new Chart(document.getElementById("pieChart"), {
   type: "pie",
@@ -101,17 +100,17 @@ pieChart = new Chart(document.getElementById("pieChart"), {
         "#fde68a"
       ],
       borderWidth: 2,
-      borderColor: "#020617"
+      borderColor: isDark ? "#020617" : "#ffffff"
     }]
   },
   options: {
     responsive: true,
-    maintainAspectRatio: false, // allows bigger pie
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "bottom",
         labels: {
-          color: "#f8fafc",        // 🔥 BRIGHT WHITE TEXT
+          color: pieTextColor,   // ✅ WORKS IN BOTH THEMES
           font: {
             size: 15,
             weight: "bold"
@@ -120,16 +119,16 @@ pieChart = new Chart(document.getElementById("pieChart"), {
         }
       },
       tooltip: {
-        backgroundColor: "#020617",
-        titleColor: "#f8fafc",     // 🔥
-        bodyColor: "#f8fafc",      // 🔥
-        borderWidth: 1,
-        borderColor: "#475569"
+        backgroundColor: isDark ? "#020617" : "#ffffff",
+        titleColor: pieTextColor,
+        bodyColor: pieTextColor,
+        borderColor: isDark ? "#475569" : "#e5e7eb",
+        borderWidth: 1
       }
     }
   }
 });
-
+       
 
   /* BAR */
   barChart = new Chart(document.getElementById("barChart"), {
