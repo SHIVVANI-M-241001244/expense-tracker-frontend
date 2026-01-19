@@ -686,7 +686,25 @@ body.dark .balance {
   height: 320px !important; /* 🔥 THIS is the key */
 }
 
+
 /* Slightly bigger pie chart */
+#pieChart {
+  height: 360px !important;
+}
+
+/* ===== FORCE CHART VISIBILITY (FINAL FIX) ===== */
+
+.card {
+  overflow: visible !important;
+}
+
+.card canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Pie chart slightly bigger */
 #pieChart {
   height: 360px !important;
 }
