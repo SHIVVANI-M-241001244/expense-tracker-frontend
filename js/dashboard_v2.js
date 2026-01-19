@@ -28,13 +28,14 @@ async function loadTransactions() {
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  if (data.length > 0) {
-  const t = data[data.length - 1]; // LAST transaction only
+   // LAST transaction only
 
   data.forEach(t => {
   if (t.type === "income") income += t.amount;
   else expense += t.amount;
 });
+  if (data.length > 0) {
+  const t = data[data.length - 1];
 
   const li = document.createElement("li");
   li.innerHTML = `
