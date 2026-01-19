@@ -115,7 +115,48 @@ function renderCharts(data, income, expense) {
   const gridColor = isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)";
 
   /* ===== PIE CHART ===== */
-  const pieCanvas = document.getElementById("pieChart");
+  const isDark = document.body.classList.contains("dark");
+
+pieChart = new Chart(document.getElementById("pieChart"), {
+  type: "pie",
+  data: {
+    labels: Object.keys(expenseMap),
+    datasets: [{
+      data: Object.values(expenseMap),
+      backgroundColor: [
+        "#fda4af",  // pink
+        "#93c5fd",  // blue
+        "#c4b5fd",  // violet
+        "#86efac",  // green
+        "#fde68a"   // yellow
+      ],
+      borderWidth: 2,
+      borderColor: isDark ? "#020617" : "#ffffff"
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false, // 🔥 allows bigger size
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: isDark ? "#f8fafc" : "#020617", // 🔥 BRIGHT TEXT
+          font: {
+            size: 14,
+            weight: "bold"
+          },
+          padding: 20
+        }
+      },
+      tooltip: {
+        bodyColor: "#f8fafc",
+        titleColor: "#f8fafc"
+      }
+    }
+  }
+});
+
   if (pieCanvas) {
     pieChart = new Chart(pieCanvas.getContext("2d"), {
       type: "pie",
