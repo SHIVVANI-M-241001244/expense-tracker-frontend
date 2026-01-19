@@ -241,3 +241,19 @@ function renderCharts(data, income, expense) {
     });
   }
 }
+function updateBudgetStatus(expense) {
+  const budget = Number(localStorage.getItem("budget"));
+  if (!budget) return;
+
+  const left = budget - expense;
+  const el = document.getElementById("budgetStatus");
+  if (!el) return;
+
+  el.innerText =
+    left < 0
+      ? `⚠ Exceeded by ₹${Math.abs(left)}`
+      : `₹${left} left`;
+}
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
