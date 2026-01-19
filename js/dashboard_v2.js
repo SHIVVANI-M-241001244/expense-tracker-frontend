@@ -31,7 +31,10 @@ async function loadTransactions() {
   if (data.length > 0) {
   const t = data[data.length - 1]; // LAST transaction only
 
-  t.type === "income" ? income += t.amount : expense += t.amount;
+  data.forEach(t => {
+  if (t.type === "income") income += t.amount;
+  else expense += t.amount;
+});
 
   const li = document.createElement("li");
   li.innerHTML = `
