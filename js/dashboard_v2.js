@@ -28,19 +28,25 @@ async function loadTransactions() {
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  data.forEach(t => {
-    t.type === "income" ? income += t.amount : expense += t.amount;
+  if (data.length > 0) {
+  const t = data[data.length - 1]; // LAST transaction only
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${t.category} – ₹${t.amount}</span>
-      <div class="tx-actions">
-        <button onclick="editTransaction('${t._id}', ${t.amount})">✏️</button>
-        <button onclick="deleteTransaction('${t._id}')">🗑</button>
-      </div>
-    `;
-    list.appendChild(li);
-  });
+  t.type === "income" ? income += t.amount : expense += t.amount;
+
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <span>
+      ${t.type === "income" ? "💰" : "💸"}
+      ${t.category} – ₹${t.amount}
+    </span>
+    <div class="tx-actions">
+      <button onclick="editTransaction('${t._id}', ${t.amount})">✏️</button>
+      <button onclick="deleteTransaction('${t._id}')">🗑</button>
+    </div>
+  `;
+  list.appendChild(li);
+}
+
 
   document.getElementById("totalIncome").innerText = `₹${income}`;
   document.getElementById("totalExpense").innerText = `₹${expense}`;
