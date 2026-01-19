@@ -708,3 +708,11 @@ body.dark .balance {
 #pieChart {
   height: 360px !important;
 }
+/* Chart titles */
+.card h3 {
+  color: #111827;
+}
+
+body.dark .card h3 {
+  color: #f9fafb;
+}
