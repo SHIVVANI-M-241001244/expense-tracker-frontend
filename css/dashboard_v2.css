@@ -526,3 +526,66 @@ body.dark .card {
 .add-transaction button {
   margin-top: 16px;
 }
+.summary-card {
+  border-radius: 26px;
+  padding: 26px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+}
+
+/* Pastel gradients */
+.summary-card.income {
+  background: linear-gradient(135deg, #dcfce7, #86efac);
+}
+
+.summary-card.expense {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+}
+
+.summary-card.balance {
+  background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
+}
+
+/* Dark mode */
+body.dark .summary-card.income {
+  background: linear-gradient(135deg, #14532d, #22c55e);
+}
+
+body.dark .summary-card.expense {
+  background: linear-gradient(135deg, #7f1d1d, #ef4444);
+}
+
+body.dark .summary-card.balance {
+  background: linear-gradient(135deg, #1e3a8a, #6366f1);
+}
+.card {
+  border-radius: 24px;
+  padding: 24px;
+  background: var(--card);
+  box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+}
+.nifty-card {
+  border-radius: 24px;
+  background: linear-gradient(135deg, #f1f5f9, #e0e7ff);
+}
+
+body.dark .nifty-card {
+  background: linear-gradient(135deg, #020617, #1e293b);
+}
+input, select {
+  border-radius: 14px;
+  padding: 12px 16px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #f8fafc;
+}
+
+body.dark input,
+body.dark select {
+  background: #020617;
+  color: #f8fafc;
+}
+.card select,
+.card input,
+.card button {
+  margin-top: 12px;
+}
+
