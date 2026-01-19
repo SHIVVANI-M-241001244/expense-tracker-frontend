@@ -627,3 +627,55 @@ body.dark .top-actions button {
   background: linear-gradient(135deg, #312e81, #1e1b4b);
   color: #f8fafc;
 }
+/* ================= DARK MODE ================= */
+
+body.dark {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+/* cards */
+body.dark .card,
+body.dark .summary-card,
+body.dark .nifty-card {
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+/* text */
+body.dark h2,
+body.dark h3,
+body.dark p {
+  color: #e5e7eb;
+}
+
+/* inputs */
+body.dark input,
+body.dark select {
+  background: #0f172a;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+/* buttons */
+body.dark button {
+  background: #334155;
+  color: #e5e7eb;
+}
+
+/* pastel cards still visible */
+body.dark .income {
+  background: linear-gradient(135deg, #14532d, #166534);
+}
+
+body.dark .expense {
+  background: linear-gradient(135deg, #7f1d1d, #991b1b);
+}
+
+body.dark .balance {
+  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+}
+.card canvas{
+  height: 320 px;
+
+}

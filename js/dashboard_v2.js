@@ -87,32 +87,49 @@ function renderCharts(data, income, expense) {
   const textColor = isDark ? "#f9fafb" : "#1f2937";
   const gridColor = isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)";
 
-  /* PIE */
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "pie",
-    data: {
-      labels: Object.keys(expenseMap),
-      datasets: [{
-        data: Object.values(expenseMap),
-        backgroundColor: ["#fda4af", "#93c5fd", "#c4b5fd", "#86efac", "#fde68a"],
-        borderWidth: 2,
-        borderColor: isDark ? "#020617" : "#ffffff"
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: textColor,
-            font: { size: 14, weight: "bold" }
-          }
+pieChart = new Chart(document.getElementById("pieChart"), {
+  type: "pie",
+  data: {
+    labels: Object.keys(expenseMap),
+    datasets: [{
+      data: Object.values(expenseMap),
+      backgroundColor: [
+        "#fda4af",
+        "#93c5fd",
+        "#c4b5fd",
+        "#86efac",
+        "#fde68a"
+      ],
+      borderWidth: 2,
+      borderColor: "#020617"
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false, // allows bigger pie
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#f8fafc",        // 🔥 BRIGHT WHITE TEXT
+          font: {
+            size: 15,
+            weight: "bold"
+          },
+          padding: 18
         }
+      },
+      tooltip: {
+        backgroundColor: "#020617",
+        titleColor: "#f8fafc",     // 🔥
+        bodyColor: "#f8fafc",      // 🔥
+        borderWidth: 1,
+        borderColor: "#475569"
       }
     }
-  });
+  }
+});
+
 
   /* BAR */
   barChart = new Chart(document.getElementById("barChart"), {
