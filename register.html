@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Create Account</title>
+  <link rel="icon" type="image/png" href="icon.png">
 
   <link rel="stylesheet" href="css/auth.css" />
 </head>
@@ -15,7 +16,10 @@
 
       <input type="text" id="name" placeholder="Name" />
       <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
+      <div class="password-wrapper">
+  <input type="password" id="password" placeholder="Password" />
+  <span class="toggle-password" onclick="togglePassword()">👁️</span>
+</div>
 
       <button onclick="register()">Register</button>
 
