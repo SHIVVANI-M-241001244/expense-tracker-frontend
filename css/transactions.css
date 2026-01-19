@@ -1,0 +1,36 @@
+body {
+  background: #f6f7fb;
+  font-family: Poppins, sans-serif;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 30px;
+}
+
+.search-box {
+  padding: 0 30px 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+#transactionList {
+  list-style: none;
+  padding: 0 30px;
+}
+
+#transactionList li {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
