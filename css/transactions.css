@@ -250,3 +250,57 @@ body.dark #transactionList li.expense {
   background: #7f1d1d;
   color: #fee2e2;
 }
+/* ===== Transaction Card ===== */
+.transaction-item {
+  padding: 16px 18px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  transition: transform 0.2s ease;
+}
+
+.transaction-item:hover {
+  transform: scale(1.01);
+}
+
+/* ===== INCOME ===== */
+.transaction-item.income {
+  background: linear-gradient(135deg, #e8f8f1, #f1fffa);
+  color: #065f46;
+  border-left: 6px solid #34d399;
+}
+
+/* ===== EXPENSE ===== */
+.transaction-item.expense {
+  background: linear-gradient(135deg, #fff1f2, #fff7f8);
+  color: #9f1239;
+  border-left: 6px solid #fb7185;
+}
+
+/* Amount */
+.tx-amount {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Category */
+.tx-category {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* Action buttons */
+.tx-actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.tx-actions button:hover {
+  opacity: 1;
+}

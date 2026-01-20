@@ -226,6 +226,43 @@ function logout() {
   localStorage.clear();
   location.href = "login.html";
 }
+/* ================= SAVE BUDGET ================= */
+/* ================= SAVE BUDGET ================= */
+function saveBudget() {
+  const budgetInput = document.getElementById("budgetInput");
+  const budget = Number(budgetInput.value);
 
+  if (!budget || budget <= 0) {
+    alert("⚠️ Please enter a valid budget amount");
+    return;
+  }
+
+  localStorage.setItem("budget", budget);
+
+  // Get current total expense from UI
+  const expenseText = document.getElementById("totalExpense").innerText;
+  const expense = Number(expenseText.replace("₹", "")) || 0;
+
+  if (expense === 0) {
+    alert(`💡 Budget of ₹${budget} saved.\nStart adding expenses to track your spending.`);
+    return;
+  }
+
+  const diff = budget - expense;
+
+  if (diff < 0) {
+    alert(
+      `🚨 Budget Exceeded!\n\n` +
+      `You have exceeded your budget by ₹${Math.abs(diff)}.\n` +
+      `Consider reducing expenses or increasing the budget.`
+    );
+  } else {
+    alert(
+      `✅ Budget Saved Successfully!\n\n` +
+      `You still have ₹${diff} left.\n` +
+      `Great job managing your expenses 👏`
+    );
+  }
+}
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", loadTransactions);
