@@ -228,41 +228,44 @@ function logout() {
 }
 /* ================= SAVE BUDGET ================= */
 /* ================= SAVE BUDGET ================= */
+/* ================= SAVE BUDGET ================= */
 function saveBudget() {
   const budgetInput = document.getElementById("budgetInput");
+  const statusEl = document.getElementById("budgetStatus");
+
   const budget = Number(budgetInput.value);
 
   if (!budget || budget <= 0) {
-    alert("⚠️ Please enter a valid budget amount");
+    statusEl.innerText = "⚠️ Please enter a valid budget amount";
+    statusEl.style.color = "#dc2626"; // red
     return;
   }
 
   localStorage.setItem("budget", budget);
 
-  // Get current total expense from UI
+  // get current expense from dashboard
   const expenseText = document.getElementById("totalExpense").innerText;
   const expense = Number(expenseText.replace("₹", "")) || 0;
 
   if (expense === 0) {
-    alert(`💡 Budget of ₹${budget} saved.\nStart adding expenses to track your spending.`);
+    statusEl.innerText =
+      `💡 Budget of ₹${budget} saved. Start adding expenses to track spending.`;
+    statusEl.style.color = "#2563eb"; // blue
     return;
   }
 
   const diff = budget - expense;
 
   if (diff < 0) {
-    alert(
-      `🚨 Budget Exceeded!\n\n` +
-      `You have exceeded your budget by ₹${Math.abs(diff)}.\n` +
-      `Consider reducing expenses or increasing the budget.`
-    );
+    statusEl.innerText =
+      `🚨 Budget exceeded by ₹${Math.abs(diff)}. Please control expenses.`;
+    statusEl.style.color = "#dc2626"; // red
   } else {
-    alert(
-      `✅ Budget Saved Successfully!\n\n` +
-      `You still have ₹${diff} left.\n` +
-      `Great job managing your expenses 👏`
-    );
+    statusEl.innerText =
+      `✅ Budget saved! You still have ₹${diff} left. Keep going 👏`;
+    statusEl.style.color = "#16a34a"; // green
   }
 }
+
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", loadTransactions);

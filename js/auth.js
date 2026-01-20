@@ -6,12 +6,12 @@ const API = "https://shivvani-m-expense-backend.onrender.com/api/auth";
    REGISTER
 ========================= */
 async function register() {
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!name || !email || !password) {
-    alert("All fields are required");
+    alert("⚠️ All fields are required");
     return;
   }
 
@@ -29,10 +29,11 @@ async function register() {
       return;
     }
 
-    alert("Registered successfully ✅");
+    alert("✅ Registered successfully");
     window.location.href = "login.html";
   } catch (err) {
-    alert("Server error");
+    console.error(err);
+    alert("❌ Server error");
   }
 }
 
@@ -40,11 +41,11 @@ async function register() {
    LOGIN
 ========================= */
 async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!email || !password) {
-    alert("Email and password required");
+    alert("⚠️ Email and password required");
     return;
   }
 
@@ -62,26 +63,36 @@ async function login() {
       return;
     }
 
-    /* ✅ NORMALIZE USER (THIS FIXES EVERYTHING) */
+    /* ✅ NORMALIZE USER OBJECT */
     const user = {
-      _id: data.user.id,   // 🔥 FIX IS HERE
+      _id: data.user.id,
       name: data.user.name,
       email: data.user.email,
     };
 
     localStorage.setItem("user", JSON.stringify(user));
-
     console.log("User saved:", user);
 
     window.location.href = "dashboard.html";
   } catch (err) {
     console.error(err);
-    alert("Server error");
+    alert("❌ Server error");
   }
 }
 
 /* =========================
-   AUTO REDIRECT (OPTIONAL)
+   TOGGLE PASSWORD VISIBILITY
+========================= */
+function togglePassword() {
+  const passwordInput = document.getElementById("password");
+  if (!passwordInput) return;
+
+  passwordInput.type =
+    passwordInput.type === "password" ? "text" : "password";
+}
+
+/* =========================
+   AUTO REDIRECT IF LOGGED IN
 ========================= */
 (function () {
   const user = JSON.parse(localStorage.getItem("user"));
