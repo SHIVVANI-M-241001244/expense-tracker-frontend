@@ -22,7 +22,8 @@ document.getElementById("greetingText").innerText =
   hour < 17 ? `Good Afternoon, ${user.name}` :
   `Good Evening, ${user.name}`;
 
-/* ================= LOAD TRANSACTIONS ================= */
+
+
 async function loadTransactions() {
   const res = await fetch(`${API}/${user._id}`);
   const data = await res.json();
@@ -30,34 +31,38 @@ async function loadTransactions() {
   let income = 0;
   let expense = 0;
 
-  const list = document.getElementById("transactionList");
-  list.innerHTML = "";
-
+  // Calculate totals
   data.forEach(t => {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
   });
 
-  /* LAST TRANSACTION ONLY */
+  // Update summary boxes
+  totalIncome.innerText = `₹${income}`;
+  totalExpense.innerText = `₹${expense}`;
+  balance.innerText = `₹${income - expense}`;
+
+  // LAST TRANSACTION ONLY
+  const list = document.getElementById("transactionList");
+  list.innerHTML = "";
+
   if (data.length > 0) {
-    const t = data[data.length - 1];
+    const last = data[data.length - 1];
+
     const li = document.createElement("li");
     li.innerHTML = `
       <span>
-        ${t.type === "income" ? "💰 Income" : "💸 Expense"} —
-        ${t.category} — ₹${t.amount}
+        ${last.type === "income" ? "💰 Income" : "💸 Expense"} —
+        ${last.category} — ₹${last.amount}
       </span>
     `;
     list.appendChild(li);
   }
 
-  document.getElementById("totalIncome").innerText = `₹${income}`;
-  document.getElementById("totalExpense").innerText = `₹${expense}`;
-  document.getElementById("balance").innerText = `₹${income - expense}`;
-
+  // Charts still use FULL data
   renderCharts(data, income, expense);
-  updateBudgetStatus(expense);
 }
+
 
 /* ================= ADD ================= */
 async function addTransaction() {
