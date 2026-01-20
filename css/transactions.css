@@ -208,4 +208,45 @@ body.dark .tx-item {
 .tx-category {
   opacity: 0.85;
   font-size: 14px;
+} 
+/* ================= TRANSACTION COLORS ================= */
+
+/* Base transaction row */
+#transactionList li {
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* TEXT */
+#transactionList li span {
+  font-size: 14px;
+}
+
+/* ===== INCOME ===== */
+#transactionList li.income {
+  background: #ecfdf5;        /* soft mint */
+  color: #065f46;
+}
+
+/* ===== EXPENSE ===== */
+#transactionList li.expense {
+  background: #fff1f2;        /* soft rose */
+  color: #7f1d1d;
+}
+
+/* ================= DARK MODE ================= */
+
+body.dark #transactionList li.income {
+  background: #064e3b;
+  color: #d1fae5;
+}
+
+body.dark #transactionList li.expense {
+  background: #7f1d1d;
+  color: #fee2e2;
 }

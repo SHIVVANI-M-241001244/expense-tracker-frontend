@@ -716,3 +716,60 @@ body.dark .balance {
 body.dark .card h3 {
   color: #f9fafb;
 }
+/* ===== VIEW ALL TRANSACTIONS BUTTON ===== */
+.view-all-btn {
+  width: 100%;
+  margin: 20px 0 30px;
+  padding: 14px 18px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: linear-gradient(135deg, #e0e7ff, #fce7f3);
+  color: #1f2937;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+}
+
+/* ===== DARK MODE ===== */
+body.dark .view-all-btn {
+  background: linear-gradient(135deg, #312e81, #4c1d95);
+  color: #f8fafc;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+/* ===== BUDGET STATUS MESSAGE ===== */
+.budget-status {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Within budget */
+.budget-status.safe {
+  color: #16a34a;
+}
+
+/* Exceeded budget */
+.budget-status.over {
+  color: #dc2626;
+}
+
+/* Dark mode */
+body.dark .budget-status.safe {
+  color: #22c55e;
+}
+
+body.dark .budget-status.over {
+  color: #f87171;
+}

@@ -29,7 +29,6 @@ async function loadTransactions() {
   const res = await fetch(`${API}/${user._id}`);
   const data = await res.json();
 
-  // ✅ FIX: define elements properly
   const totalIncome = document.getElementById("totalIncome");
   const totalExpense = document.getElementById("totalExpense");
   const balance = document.getElementById("balance");
@@ -37,34 +36,42 @@ async function loadTransactions() {
   let income = 0;
   let expense = 0;
 
-  // Calculate totals
   data.forEach(t => {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
   });
 
-  // Update summary boxes
+  /* SUMMARY */
   totalIncome.innerText = `₹${income}`;
   totalExpense.innerText = `₹${expense}`;
   balance.innerText = `₹${income - expense}`;
 
-  // ===== LAST TRANSACTION ONLY =====
+  /* ===== LAST TRANSACTION ONLY ===== */
   const list = document.getElementById("transactionList");
   list.innerHTML = "";
 
-  if (data.length > 0) {
-    const last = data[data.length - 1];
+  const sortedData = [...data].sort((a, b) =>
+    new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
+  );
+
+  if (sortedData.length > 0) {
+    const t = sortedData[sortedData.length - 1];
+
     const li = document.createElement("li");
+    li.classList.add(t.type);
     li.innerHTML = `
       <span>
-        ${last.type === "income" ? "💰 Income" : "💸 Expense"} —
-        ${last.category} — ₹${last.amount}
+        ${t.type === "income" ? "💰 Income" : "💸 Expense"} —
+        ${t.category} — ₹${t.amount}
       </span>
     `;
     list.appendChild(li);
   }
 
-  // Charts use FULL data
+  /* BUDGET MESSAGE */
+  updateBudgetStatus(expense);
+
+  /* CHARTS */
   renderCharts(data, income, expense);
 }
 
@@ -99,11 +106,9 @@ function renderCharts(data, income, expense) {
 
   /* ===== PIE ===== */
   const expenseMap = {};
-  data
-    .filter(t => t.type === "expense")
-    .forEach(t => {
-      expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
-    });
+  data.filter(t => t.type === "expense").forEach(t => {
+    expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount;
+  });
 
   pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
@@ -189,6 +194,25 @@ function renderCharts(data, income, expense) {
       plugins: { legend: { display: false } }
     }
   });
+}
+
+/* ================= BUDGET MESSAGE ================= */
+function updateBudgetStatus(expense) {
+  const budget = Number(localStorage.getItem("budget"));
+  const statusEl = document.getElementById("budgetStatus");
+  if (!budget || !statusEl) return;
+
+  const remaining = budget - expense;
+
+  if (remaining < 0) {
+    statusEl.innerText =
+      `⚠️ You exceeded your budget by ₹${Math.abs(remaining)}. Time to slow down.`;
+    statusEl.className = "budget-status over";
+  } else {
+    statusEl.innerText =
+      `✅ You still have ₹${remaining} left. Spend mindfully 🌱`;
+    statusEl.className = "budget-status safe";
+  }
 }
 
 /* ================= THEME ================= */
