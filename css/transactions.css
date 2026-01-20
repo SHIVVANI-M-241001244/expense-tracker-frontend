@@ -304,3 +304,63 @@ body.dark #transactionList li.expense {
 .tx-actions button:hover {
   opacity: 1;
 }
+/* Base transaction card */
+.transaction-item {
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transaction-item:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.12);
+}
+
+/* 💜 INCOME — Lavender Mint */
+.transaction-item.income {
+  background: linear-gradient(
+    135deg,
+    #ede9fe,   /* lavender */
+    #e0f2fe    /* soft blue */
+  );
+  color: #4c1d95; /* deep lavender text */
+}
+
+/* 💜 EXPENSE — Lavender Rose */
+.transaction-item.expense {
+  background: linear-gradient(
+    135deg,
+    #f5e9ff,   /* soft lilac */
+    #ffe4e6    /* pastel rose */
+  );
+  color: #7c2d12; /* warm muted text */
+}
+
+/* Amount */
+.tx-amount {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Category text */
+.tx-category {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* Right side icons */
+.tx-actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.tx-actions button:hover {
+  opacity: 1;
+}
