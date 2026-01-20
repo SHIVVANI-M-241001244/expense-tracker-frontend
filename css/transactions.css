@@ -170,3 +170,42 @@ body.dark .tx-item {
 .tx-actions button:hover {
   opacity: 1;
 }
+/* ===== TRANSACTION CARD BASE ===== */
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+
+.transaction-item:hover {
+  transform: scale(1.01);
+}
+
+/* ===== INCOME ===== */
+.transaction-item.income {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #065f46;
+}
+
+/* ===== EXPENSE ===== */
+.transaction-item.expense {
+  background: linear-gradient(135deg, #ffe4e6, #fecdd3);
+  color: #9f1239;
+}
+
+/* Amount styling */
+.tx-amount {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Category */
+.tx-category {
+  opacity: 0.85;
+  font-size: 14px;
+}
