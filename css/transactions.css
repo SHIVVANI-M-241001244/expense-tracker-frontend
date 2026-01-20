@@ -93,3 +93,28 @@ body {
   text-align: center;
   opacity: 0.6;
 }
+body {
+  color: #1f2937; /* dark readable text */
+}
+
+.tx-item {
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+.tx-item.income {
+  border-left: 4px solid #22c55e;
+}
+
+.tx-item.expense {
+  border-left: 4px solid #ef4444;
+}
+
+.tx-category,
+.tx-amount {
+  color: #1f2937;
+}
+body.dark .tx-item {
+  background: #020617;
+  color: #f8fafc;
+}
