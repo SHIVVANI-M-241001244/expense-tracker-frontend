@@ -118,3 +118,55 @@ body.dark .tx-item {
   background: #020617;
   color: #f8fafc;
 }
+/* ===== Transaction Card ===== */
+#transactionList li {
+  background: #FDECEF;          /* default expense */
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #E5E7EB;
+  transition: transform 0.2s ease;
+}
+
+#transactionList li:hover {
+  transform: scale(1.01);
+}
+
+/* ===== Income ===== */
+#transactionList li .income {
+  background: #E8F5EC;
+}
+
+/* ===== Expense ===== */
+#transactionList li .expense {
+  background: #FDECEF;
+}
+
+/* ===== Text ===== */
+#transactionList span {
+  color: #374151;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ===== Amount ===== */
+.tx-amount {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ===== Action Buttons ===== */
+.tx-actions button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.tx-actions button:hover {
+  opacity: 1;
+}
